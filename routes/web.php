@@ -13,5 +13,6 @@ Route::post('/logout', [HomeController::class, 'Userlogout'])->name('Userlogout'
 
 
 Route::get('/staff', [StaffController::class, 'index'])->name('staff.dashboard');
+Route::get('/staff/Addcustomer/',[StaffController::class,'Addcustomer'])->name('Addcustomer');
 
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');

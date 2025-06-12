@@ -16,6 +16,10 @@ class StaffController extends Controller
         return view('staff.dashboard');
     }
 
+    public function Addcustomer(){
+        return view("staff.addcustomer");
+    }
+
     /**
      * Show the form for creating a new resource.
      */
