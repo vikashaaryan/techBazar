@@ -10,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-200">
 
     @include('manager.components.navbar')
 
@@ -18,7 +18,7 @@
         <div class="w-2/12">
             @include('manager.components.sidebar')
         </div>
-        <div class="w-10/12 mt-24">
+        <div class="w-10/12 mt-16">
             @section('content')
             @show
         </div>

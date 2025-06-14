@@ -5,10 +5,10 @@
 @endsection
 
 @section('content')
-    <div class=" min-h-screen bg-gray-50">
+    <div class="p-4">
       
         <!-- Main Content -->
-        <div class="ml-56 mt-10 p-8">
+        <div class=" ">
             <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
                     <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

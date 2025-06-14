@@ -1,4 +1,4 @@
-<div class="fixed top-0 left-0 h-screen mt-16 bg-gradient-to-b from-blue-900 to-indigo-900 text-black shadow-lg z-50 overflow-y-auto">
+<div class="fixed top-0 left-0 h-screen mt-16  text-black shadow-lg z-50 overflow-y-auto">
     <nav class="flex flex-col space-y-2 p-4 text-sm font-medium">
         <!-- Existing Links -->
         <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-200 transition">
