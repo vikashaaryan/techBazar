@@ -1,6 +1,9 @@
 @extends('manager.managerlayout')
 
-@section('content')
+@section('title', 'Create-Quote')
 
-    
+@section('content')
+    <div>
+        hii
+    </div>
 @endsection

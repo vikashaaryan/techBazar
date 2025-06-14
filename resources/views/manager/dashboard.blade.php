@@ -23,7 +23,7 @@
                 </h2>
             
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    <a href="{{route('Addcustomer')}}"
+                    <a href="{{route('customer.index')}}"
                         class="group flex flex-col items-center p-5 rounded-lg hover:bg-gray-100 transition-colors border border-gray-100">
                         <div class="bg-blue-100 p-3 rounded-full mb-3 group-hover:bg-blue-200 transition-colors">
                             <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
