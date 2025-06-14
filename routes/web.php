@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\StaffController;
@@ -14,6 +15,7 @@ Route::post('/logout', [HomeController::class, 'Userlogout'])->name('Userlogout'
 
 
 Route::get('/manager', [ManagerController::class, 'index'])->name('manager.dashboard');
-Route::get('/manager/customer/form',[ManagerController::class,'Addcustomer'])->name('Addcustomer');
+
+Route::get('/manager/customer/form',[CustomerController::class,'index'])->name('Addcustomer');
 
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');

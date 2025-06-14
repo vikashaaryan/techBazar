@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Manager;
+use App\Models\Customer;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class ManagerController extends Controller
+class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('manager.dashboard');
+        return view('manager.customer.addcustomer');
     }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -34,7 +35,7 @@ class ManagerController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Manager $manager)
+    public function show(Customer $customer)
     {
         //
     }
@@ -42,7 +43,7 @@ class ManagerController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Manager $manager)
+    public function edit(Customer $customer)
     {
         //
     }
@@ -50,7 +51,7 @@ class ManagerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Manager $manager)
+    public function update(Request $request, Customer $customer)
     {
         //
     }
@@ -58,7 +59,7 @@ class ManagerController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Manager $manager)
+    public function destroy(Customer $customer)
     {
         //
     }
