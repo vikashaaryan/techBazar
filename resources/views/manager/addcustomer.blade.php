@@ -1,4 +1,4 @@
-@extends('staff.stafflayout')
+@extends('manager.managerlayout')
 
 @section('title')
     Staff Dashboard
@@ -8,7 +8,7 @@
     <div class="flex min-h-screen bg-gray-50">
         <!-- Sidebar -->
         <div class="w-60 bg-white shadow-sm">
-            @include('staff.sidebar')
+            @include('manager.sidebar')
         </div>
         <div class="bg-white ">
             <div>
