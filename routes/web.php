@@ -17,7 +17,7 @@ Route::post('/logout', [HomeController::class, 'Userlogout'])->name('Userlogout'
 
 Route::get('/manager', [ManagerController::class, 'index'])->name('manager.dashboard');
 
-Route::get('/manager/customer/form',[CustomerController::class,'index'])->name('Addcustomer');
+Route::resource('customer',CustomerController::class);
 Route::resource('quotes', QuoteController::class);
 
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
