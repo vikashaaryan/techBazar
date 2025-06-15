@@ -8,8 +8,8 @@ class Address extends Model
 {
     protected $guarded = [];
     
-    public function parent()
+    public function address()
     {
-        return $this->hasOne(Address::class, "id", "parent_cat");
+        return $this->hasOne(Address::class, "id", "address_id");
     }
 }

@@ -100,7 +100,7 @@
                     class="z-10 hidden absolute bg-white text-black divide-y divide-gray-100 rounded-lg shadow w-44">
                     <ul class="py-2 text-sm">
                         <li><a href="{{route('product.create')}}" class="block px-4 py-2 hover:bg-gray-100">Add Products</a></li>
-                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">View Products</a></li>
+                        <li><a href="{{route('product.index')}}" class="block px-4 py-2 hover:bg-gray-100">View Products</a></li>
                     </ul>
                 </div>
             </div>

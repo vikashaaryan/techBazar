@@ -5,8 +5,8 @@
 @endsection
 
 @section('content')
-<div class="flex-1  md:p-8">
-    <div class="max-w-7xl  bg-white rounded-lg shadow-md overflow-hidden">
+<div class="flex-1 md:p-8">
+    <div class="max-w-7xl bg-white rounded-lg shadow-md overflow-hidden">
         <!-- Page Header -->
         <div class="bg-blue-600 px-6 py-4 flex flex-col md:flex-row justify-between items-start md:items-center">
             <div>
@@ -86,15 +86,13 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex justify-end space-x-2">
-                                <a href="#{{ route('customer.show', $customer->id) }}" class="text-blue-600 hover:text-blue-900" title="View"> 
-                                    <button onclick="openCustomerModal({{ $customer->id }})" class="text-blue-600 hover:text-blue-900" title="View">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
-                                </a>
-                                <a href="" class="text-indigo-600 hover:text-indigo-900" title="Edit">
+                                <button onclick="openCustomerModal({{ $customer->id }})" class="text-blue-600 hover:text-blue-900" title="View">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                                <a href="{{ route('customer.edit', $customer->id) }}" class="text-indigo-600 hover:text-indigo-900" title="Edit">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                     </svg>
@@ -123,7 +121,10 @@
         </div>
     </div>
 </div>
-<div id="customerModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+
+<!-- Modals for each customer -->
+@foreach($customers as $customer)
+<div id="customerModal-{{ $customer->id }}" class="fixed inset-0 z-50 hidden overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <!-- Modal Backdrop -->
         <div class="fixed inset-0 transition-opacity" aria-hidden="true">
@@ -136,7 +137,7 @@
                 <!-- Modal Header -->
                 <div class="bg-blue-600 px-6 py-4 flex justify-between items-center">
                     <h3 class="text-lg font-medium text-white">Customer Details</h3>
-                    <button onclick="closeCustomerModal()" class="text-white hover:text-gray-200">
+                    <button onclick="closeCustomerModal({{ $customer->id }})" class="text-white hover:text-gray-200">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -197,7 +198,7 @@
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500">Address</label>
-                                    <p class="mt-1 text-gray-900">{{ $customer->address->address}}</p>
+                                    <p class="mt-1 text-gray-900">{{ $customer->address ? $customer->address->address : '-' }}</p>
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
@@ -227,50 +228,28 @@
             
             <!-- Modal Footer -->
             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button type="button" onclick="closeCustomerModal()" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                <button type="button" onclick="closeCustomerModal({{ $customer->id }})" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
                     Close
                 </button>
-                <a href="" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                <a href="{{ route('customer.edit', $customer->id) }}" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                     Edit Customer
                 </a>
             </div>
         </div>
     </div>
 </div>
+@endforeach
 
-<!-- JavaScript for Modal Control -->
+<!-- Modal JS -->
 <script>
-    function openCustomerModal() {
-        document.getElementById('customerModal').classList.remove('hidden');
+    function openCustomerModal(id) {
+        document.getElementById('customerModal-' + id).classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
     }
-    
-    function closeCustomerModal() {
-        document.getElementById('customerModal').classList.add('hidden');
+
+    function closeCustomerModal(id) {
+        document.getElementById('customerModal-' + id).classList.add('hidden');
         document.body.classList.remove('overflow-hidden');
     }
-    
-    // Close modal when clicking outside content
-    window.onclick = function(event) {
-        const modal = document.getElementById('customerModal');
-        if (event.target === modal) {
-            closeCustomerModal();
-        }
-    }
-    
-    // Close with Escape key
-    document.onkeydown = function(evt) {
-        evt = evt || window.event;
-        if (evt.key === "Escape") {
-            closeCustomerModal();
-        }
-    };
 </script>
-
-<style>
-    /* Smooth modal transition */
-    #customerModal {
-        transition: opacity 0.3s ease;
-    }
-</style>
 @endsection
