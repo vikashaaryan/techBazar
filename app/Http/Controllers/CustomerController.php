@@ -18,11 +18,7 @@ class CustomerController extends Controller
         return view('manager.customer.managecustomer', compact('customers'));
     }
 
-    public function getCustomerModal($id)
-    {
-        $customer = Customer::with('address')->findOrFail($id);
-        return view('manager.customer.modal-content', compact('customer'));
-    }
+    
 
     /**
      * Show the form for creating a new resource.
