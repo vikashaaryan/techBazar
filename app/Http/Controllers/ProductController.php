@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Product;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return view('manager.products.insertProduct');
+        //
     }
 
     /**
@@ -21,7 +22,8 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $categories = Category::all();
+        return view('manager.products.insertProduct', compact('categories'));
     }
 
     /**
@@ -29,7 +31,25 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'sku' => 'nullable|string|max:100|unique:products,sku',
+            'category' => 'required|exists:categories,id',
+            'unit' => 'required|string|max:50',
+            'mrp' => 'required|numeric|min:0',
+            'sell_price' => 'required|numeric|min:0|lte:mrp',
+            'qty' => 'required|integer|min:0',
+            'brand' => 'required|string|max:100',
+            'barcode' => 'nullable|string|max:100|unique:products,barcode',
+            'warranty' => 'nullable|string|max:100',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'description' => 'nullable|string|max:1000',
+        ]);
+
+        $data['image'] = request()->file('image')->store('product_images', 'public');
+
+        Product::create($data);
+        return redirect()->back();
     }
 
     /**
