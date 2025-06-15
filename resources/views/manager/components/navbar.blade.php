@@ -22,9 +22,9 @@
                 <div id="dropdownClients"
                     class="z-10 hidden absolute bg-white text-black divide-y divide-gray-100 rounded-lg shadow w-44">
                     <ul class="py-2 text-sm">
-                        <li><a href="{{route('customer.index')}}" class="block px-4 py-2 hover:bg-gray-100">Add
+                        <li><a href="{{route('customer.create')}}" class="block px-4 py-2 hover:bg-gray-100">Add
                                 Customer</a></li>
-                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">View Customers</a></li>
+                        <li><a href="{{route('customer.index')}}" class="block px-4 py-2 hover:bg-gray-100">View Customers</a></li>
                     </ul>
                 </div>
             </div>

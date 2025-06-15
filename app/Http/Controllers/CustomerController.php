@@ -14,7 +14,14 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        return view('manager.customer.addcustomer');
+        $customers = Customer::with('address')->get();
+        return view('manager.customer.managecustomer', compact('customers'));
+    }
+
+    public function getCustomerModal($id)
+    {
+        $customer = Customer::with('address')->findOrFail($id);
+        return view('manager.customer.modal-content', compact('customer'));
     }
 
     /**
@@ -22,7 +29,7 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        //
+        return view('manager.customer.addcustomer');
     }
 
     /**
@@ -74,9 +81,9 @@ class CustomerController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Customer $customer)
+    public function show($id)
     {
-        //
+        
     }
 
     /**
@@ -100,6 +107,6 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer)
     {
-        //
-    }
+        $customer->delete();
+        return redirect()->back();}
 }
