@@ -17,6 +17,8 @@ Route::post('/logout', [HomeController::class, 'Userlogout'])->name('Userlogout'
 
 Route::get('/manager', [ManagerController::class, 'index'])->name('manager.dashboard');
 
+Route::get('/customers/{id}/modal', [CustomerController::class, 'getCustomerModal'])->name('customers.modal');
+
 Route::resource('customer',CustomerController::class);
 Route::resource('category',CategoryController::class);
 Route::resource('product',ProductController::class);

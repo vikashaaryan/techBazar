@@ -9,7 +9,7 @@
             <span>Dashboard</span>
         </a>
 
-        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-200 transition">
+        <a href="{{route('customer.index')}}" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-200 transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round"
                     d="M5.121 17.804A9.004 9.004 0 0112 15c2.21 0 4.21.804 5.879 2.121M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
