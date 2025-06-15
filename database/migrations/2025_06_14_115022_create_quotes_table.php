@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('quotes', function (Blueprint $table) {
             $table->id();
+            $table->string('quotation-no');
+            $table->date('valid_date');
+            $table->enum('status',['sent','draft','accepted','rejected','cancelled']);
+            $table->foreignId('customer_id')->constrained()->onDelete('CASCADE');
+            $table->string('notes')->nullable();
+            $table->decimal('subtotal');
+            $table->string('tax');
+            $table->decimal('total');
             $table->timestamps();
         });
     }
