@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ManagerController;
@@ -17,6 +18,7 @@ Route::post('/logout', [HomeController::class, 'Userlogout'])->name('Userlogout'
 Route::get('/manager', [ManagerController::class, 'index'])->name('manager.dashboard');
 
 Route::resource('customer',CustomerController::class);
+Route::resource('category',CategoryController::class);
 Route::resource('product',ProductController::class);
 Route::resource('quotes', QuoteController::class);
 

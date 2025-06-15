@@ -16,6 +16,13 @@
             </svg>
             <span>Customer</span>
         </a>
+        <a href="{{route('category.index')}}" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-200 transition">
+            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              
+            <span>Category</span>
+        </a>
 
         <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-200 transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
