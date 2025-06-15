@@ -55,9 +55,9 @@
                                 <span class="mx-4 text-gray-500">OR</span>
                                 <div class="flex-grow border-t border-gray-300"></div>
                             </div>
-                            <button type="button" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
+                            <a href="{{ route('customer.index') }}"  class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
                                 + Add New Customer
-                            </button>
+</a>
                         </div>
                     </div>
 
