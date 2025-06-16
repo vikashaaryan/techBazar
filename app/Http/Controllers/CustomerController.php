@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use App\Models\Customer;
 use App\Http\Controllers\Controller;
+use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
@@ -70,7 +71,7 @@ class CustomerController extends Controller
             'status' => $request->status,
             'address_id' => $address->id,
         ]);
-
+        ToastMagic::success('Customer Add successfully!');
         return redirect()->back();
     }
 

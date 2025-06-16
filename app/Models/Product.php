@@ -10,6 +10,6 @@ class Product extends Model
 
     public function parent()
     {
-        return $this->hasOne(Product::class, "id", "category");
+        return $this->hasOne(Category::class, "id", "category");
     }
 }

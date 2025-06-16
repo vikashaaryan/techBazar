@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TechBaza - Electric Shop Management System</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    {!! ToastMagic::styles() !!}
 
 </head>
 
@@ -42,7 +43,7 @@
     @section('content')
 
     @show
-
+    {!! ToastMagic::scripts() !!}
 </body>
 
 </html>

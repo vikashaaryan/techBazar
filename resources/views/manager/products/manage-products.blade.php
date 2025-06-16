@@ -54,7 +54,7 @@
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-10 w-10">
                                         <img class="h-10 w-10 rounded-md object-cover" 
-                                      src="{{ asset('storage/product_images/' . $product->image) }}"
+                                      src="{{ asset('storage/' . $product->image) }}"
                                         alt="vk">
                                     </div>
                                     <div class="ml-4">
@@ -63,7 +63,7 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $product->sku }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $product->parent->category ?? 'N/A' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $product->parent ? $product->parent->cat_title : '-' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $product->brand }}</td>
 
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rs.{{ number_format($product->mrp, 2) }}</td>
