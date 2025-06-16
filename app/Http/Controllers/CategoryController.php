@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Http\Controllers\Controller;
+use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -40,6 +41,7 @@ class CategoryController extends Controller
             'description' => $request->description,
             'parent_cat' => $request->parent_cat ?? null,
         ]);
+        ToastMagic::success('Category added successfully!');
         return redirect()->route('category.index');
     }
 
@@ -56,7 +58,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+        
     }
 
     /**

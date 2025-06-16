@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -36,6 +37,8 @@ class HomeController extends Controller
             'role' => $request->role,
             'password' => $request->password,
         ]);
+        ToastMagic::success('Usre Register successfully!');
+
 
         return redirect()->route('home')->with('success', 'User registered successfully!');
     }
@@ -57,6 +60,8 @@ class HomeController extends Controller
                     return redirect()->back();
                 }
             }
+            ToastMagic::success('successfully! Login');
+
             return view("homepage");
         }
         

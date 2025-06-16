@@ -5,13 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use App\Http\Controllers\Controller;
+use Devrabiul\ToastMagic\Facades\ToastMagic;
+use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\Request;
+
+
+
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
     public function index()
     {
         $products = Product::all();
@@ -50,6 +56,7 @@ class ProductController extends Controller
         $data['image'] = request()->file('image')->store('product_images', 'public');
 
         Product::create($data);
+        ToastMagic::success('Product added successfully!');
         return redirect()->back();
     }
 

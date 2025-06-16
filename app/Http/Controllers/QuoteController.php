@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Quote;
 use App\Http\Controllers\Controller;
+use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Http\Request;
 
 class QuoteController extends Controller
@@ -45,6 +46,7 @@ class QuoteController extends Controller
         ]);
 
         Quote::create($data);
+        ToastMagic::success('Quotation added successfully!');
         return redirect()->back();
 
 
