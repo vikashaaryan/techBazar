@@ -138,16 +138,14 @@
                                                @endforeach
                                             </select>
 
-                                            <div class="relative">
-                                                <input type="number" placeholder="Price"
+                                            <div class="">
+                                                <input type="number" placeholder="Price $"
                                                     class="w-full border rounded-md px-3 py-2 pr-10 text-sm" />
-                                                <span class="absolute right-3 top-2.5 text-sm text-gray-500">$</span>
                                             </div>
 
-                                            <div class="relative">
-                                                <input type="number" placeholder="Discount"
+                                            <div class="">
+                                                <input type="number" placeholder="Disc. $"
                                                     class="w-full border rounded-md px-3 py-2 pr-10 text-sm" />
-                                                <span class="absolute right-3 top-2.5 text-sm text-gray-500">$</span>
                                             </div>
                                         </div>
                                     </div>
