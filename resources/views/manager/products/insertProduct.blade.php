@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <div class="min-h-screen bg-gray-100 p-4 md:p-8">
+    <div class="min-h-screen bg-gray-50 m-3 rounded p-4 md:p-8">
         <div class="max-w-6xl mx-auto">
             <!-- Header Section -->
             <div class="mb-8">

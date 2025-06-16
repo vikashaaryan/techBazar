@@ -15,7 +15,7 @@ Route::post('/login', [HomeController::class, 'Userlogin'])->name('login.submit'
 Route::post('/logout', [HomeController::class, 'Userlogout'])->name('Userlogout');
 
 
-Route::get('/manager', [ManagerController::class, 'index'])->name('manager.dashboard');
+Route::get('/manager', [ManagerController::class, 'dashboard'])->name('manager.dashboard');
 
 
 Route::resource('customer',CustomerController::class);

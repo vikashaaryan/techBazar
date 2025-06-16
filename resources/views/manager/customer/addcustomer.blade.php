@@ -6,7 +6,7 @@
 
 @section('content')
     <!-- Main Content -->
-    <div class="m-1 rounded bg-gray-100 ">
+    <div class="m-3 rounded bg-white p-4  ">
         <div class="bg-blue-600 rounded px-6 py-4">
             <h2 class="text-2xl font-semibold text-white">Add Customer Details</h2>
         </div>

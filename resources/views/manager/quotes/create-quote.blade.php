@@ -3,7 +3,7 @@
 @section('title', 'Create-Quote')
 
 @section('content')
-    <div class="min-h-screen bg-white py-12">
+    <div class="min-h-screen m-3 rounded bg-white py-12">
         <div class="max-w-6xl mx-auto bg-white  shadow-xl rounded-xl overflow-hidden">
 
             <!-- Main Content -->
@@ -154,11 +154,6 @@
                                 </div>
                             </template>
                         </div>
-
-
-
-
-
                         <!-- Notes -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
@@ -228,15 +223,9 @@
                                 <p class="mt-2">GSTIN: 22ABCDE1234F1Z5</p>
                             </div>
                         </div>
-
-
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
-
-
-
 @endsection

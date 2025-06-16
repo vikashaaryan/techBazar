@@ -14,7 +14,7 @@
 
     @include('manager.components.navbar')
 
-    <div class="flex gap-5 w-full">
+    <div class="flex gap-5 w-full ">
         <div class="w-2/12">
             @include('manager.components.sidebar')
         </div>

@@ -1,7 +1,7 @@
-<div class="fixed top-0 left-0 h-screen mt-16  text-black shadow-lg z-50 overflow-y-auto">
+<div class="fixed top-1.5 left-0 h-screen mt-16 bg-white  text-black shadow-lg z-50 overflow-y-auto">
     <nav class="flex flex-col space-y-2 p-4 text-sm font-medium">
         <!-- Existing Links -->
-        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-200 transition">
+        <a href="{{route('manager.dashboard')}}" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-200 transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round"
                     d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m4-8v8m-4 0h4" />
