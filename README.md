@@ -65,3 +65,4 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 // tasks to discuss with teacher
 1. can i make our own url from resourse
+2. global validation
