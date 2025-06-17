@@ -20,7 +20,12 @@
                                 <input type="text" name="quotation_no" class="w-full border-b-2 py-2 px-1 bg-gray-50">
                                 @error('quotation_no')<p class="text-red-500 text-xs">{{ $message }}</p>@enderror
                             </div>
-
+                            <div>
+                                <label>Quotation Date</label>
+                                <input type="date" name="quotation_date" 
+                                    class="w-full border-b-2 py-2 px-1 bg-gray-50">
+                                     @error('quotation_date')<p class="text-red-500 text-xs">{{ $message }}</p>@enderror
+                            </div>
                             <div>
                                 <label>Valid Till</label>
                                 <input type="date" name="valid_date" class="w-full border-b-2 py-2 px-1 bg-gray-50">
@@ -62,11 +67,10 @@
                                 + Add New Customer
                             </a>
                         </div>
-
-                        <div x-data="quotationForm()" class="space-y-4">
+ 
+                        <div x-data="quotationForm()" x-init="init()" class="space-y-4">
                             <template x-for="(item, index) in items" :key="index">
                                 <div class="flex items-start gap-3 p-4 border rounded shadow">
-                                    <!-- Action buttons remain the same -->
                                     <div class="flex flex-col items-center gap-2 pt-1 text-gray-400">
                                         <button type="button" @click="duplicateItem(index)" class="hover:text-green-500">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,7 +78,7 @@
                                                     d="M12 4v16m8-8H4" />
                                             </svg>
                                         </button>
-                                         <button type="button" @click="removeItem(index)" class="hover:text-red-500">
+                                        <button type="button" @click="removeItem(index)" class="hover:text-red-500">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M6 18L18 6M6 6l12 12" />
@@ -84,7 +88,7 @@
 
                                     <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <select :name="`items[${index}][product_id]`" x-model="item.product_id"
+                                            <select :name="'items['+index+'][product_id]'" x-model="item.product_id"
                                                 @change="fetchProductDetails(index)"
                                                 class="w-full border rounded px-2 py-2 text-sm">
                                                 <option value="">Select Product</option>
@@ -92,37 +96,39 @@
                                                     <option :value="product.id" x-text="product.name"></option>
                                                 </template>
                                             </select>
-                                            @error('items.*.product_id')<p class="text-red-500 text-xs">{{ $message }}</p>
-                                            @enderror
+                                @error('items.0.product_id')<p class="text-red-500 text-xs">{{ $message }}</p>@enderror
 
-                                            <textarea :name="`items[${index}][description]`" x-model="item.description"
+                                            
+                                            <textarea :name="'items['+index+'][description]'" x-model="item.description"
                                                 placeholder="Description"
                                                 class="w-full h-20 border rounded px-2 py-1 mt-2 text-sm"></textarea>
+                                                 <input type="number" :name="'items['+index+'][mrp]'" x-model="item.mrp"
+                                                placeholder="mrp" class="w-full border rounded px-2 py-1 text-sm" />
+                                @error('description')<p class="text-red-500 text-xs">{{ $message }}</p>@enderror
 
-                                            <input type="number" :name="`items[${index}][mrp]`" x-model="item.mrp"
-                                                placeholder="MRP" class="w-full border rounded px-2 py-1 text-sm" />
-                                            @error('items.*.mrp')<p class="text-red-500 text-xs">{{ $message }}</p>@enderror
+                                                
                                         </div>
 
                                         <div class="grid grid-cols-2 gap-4">
-                                            <input type="number" :name="`items[${index}][quantity]`" x-model="item.quantity"
-                                                placeholder="Qty" class="col-span-2 border rounded px-2 py-1 text-sm" />
-                                            @error('items.*.quantity')<p class="text-red-500 text-xs">{{ $message }}</p>
-                                            @enderror
-
-                                            <select :name="`items[${index}][unit]`" x-model="item.unit"
+                                            <input type="number" :name="'items['+index+'][quantity]'"
+                                                x-model="item.quantity" placeholder="Qty"
+                                                class="col-span-2 border rounded px-2 py-1 text-sm" />
+                                @error('quantity')<p class="text-red-500 text-xs">{{ $message }}</p>@enderror
+                                                
+                                            <select :name="'items['+index+'][unit]'" x-model="item.unit"
                                                 class="col-span-2 border rounded px-2 py-1 text-sm">
-                                                <option value="">Select Unit</option>
-                                                <option value="piece">Piece</option>
-                                                <option value="box">Box</option>
+                                                <option>None</option>
+                                                <option selected>Piece</option>
+                                                <option>Box</option>
                                             </select>
-                                            @error('items.*.unit')<p class="text-red-500 text-xs">{{ $message }}</p>
-                                            @enderror
+                                @error('unit')<p class="text-red-500 text-xs">{{ $message }}</p>@enderror
 
-                                            <input type="number" :name="`items[${index}][discount]`" x-model="item.discount"
-                                                placeholder="Discount" class="w-full border rounded px-2 py-1 text-sm" />
-                                            @error('items.*.discount')<p class="text-red-500 text-xs">{{ $message }}</p>
-                                            @enderror
+                                           
+                                            <input type="number" :name="'items['+index+'][discount]'"
+                                                x-model="item.discount" placeholder="Discount"
+                                                class="w-full border rounded px-2 py-1 text-sm" />
+                                @error('discount')<p class="text-red-500 text-xs">{{ $message }}</p>@enderror
+
                                         </div>
                                     </div>
                                 </div>
@@ -132,7 +138,8 @@
                                 class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                                 + Add Product
                             </button>
-                        </div>
+                        </div> 
+                       
                         <div>
                             <label>Notes</label>
                             <textarea rows="4" name="notes" class="w-full border rounded p-3 bg-gray-50"></textarea>
@@ -146,20 +153,20 @@
                                 <div>
                                     <label>Subtotal</label>
                                     <input type="text" name="subtotal" class="w-full border-b-2 py-1 px-1 bg-white">
-                                    @error('subtotal')<p class="text-red-500 text-xs">{{ $message }}</p>@enderror
+                                @error('subtotal')<p class="text-red-500 text-xs">{{ $message }}</p>@enderror
 
                                 </div>
                                 <div>
                                     <label>Tax</label>
                                     <input type="text" name="tax" class="w-full border-b-2 py-1 px-1 bg-white">
-                                    @error('tax')<p class="text-red-500 text-xs">{{ $message }}</p>@enderror
+                                @error('tax')<p class="text-red-500 text-xs">{{ $message }}</p>@enderror
 
                                 </div>
                                 <div>
                                     <label>Total</label>
                                     <input type="text" name="total"
                                         class="w-full border-b-2 py-1 px-1 bg-blue-50 font-medium">
-                                    @error('tax')<p class="text-red-500 text-xs">{{ $message }}</p>@enderror
+                                @error('tax')<p class="text-red-500 text-xs">{{ $message }}</p>@enderror
 
                                 </div>
                             </div>
@@ -202,49 +209,25 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('quotationForm', () => ({
-                items: [{
-                    product_id: '',
-                    description: '',
-                    quantity: 1,
-                    unit: 'piece',
-                    mrp: '',
-                    discount: 0
-                }],
+                items: [{ product_id: '', description: '', quantity: '', unit: '', mrp: '', discount: '' }],
                 products: [],
 
                 init() {
-                    // Fetch products list
-                    axios.get('/products/json')
-                        .then(res => this.products = res.data)
-                        .catch(error => console.error('Error fetching products:', error));
+                    axios.get('/products/json').then(res => this.products = res.data);
                 },
 
                 fetchProductDetails(index) {
-                    const productId = this.items[index].product_id;
+                    let productId = this.items[index].product_id;
                     if (!productId) return;
-
-                    axios.get(`/products/${productId}/details`)
-                        .then(res => {
-                            this.items[index] = {
-                                ...this.items[index],
-                                description: res.data.description || '',
-                                mrp: res.data.mrp || 0,
-                                discount: res.data.discount || 0,
-                                unit: res.data.unit || 'piece'
-                            };
-                        })
-                        .catch(error => console.error('Error fetching product details:', error));
+                    axios.get(`/products/${productId}/details`).then(res => {
+                        this.items[index].description = res.data.description;
+                        this.items[index].mrp = res.data.mrp;
+                        this.items[index].discount = res.data.discount;
+                    });
                 },
 
                 addItem() {
-                    this.items.push({
-                        product_id: '',
-                        description: '',
-                        quantity: 1,
-                        unit: 'piece',
-                        mrp: '',
-                        discount: 0
-                    });
+                    this.items.push({ product_id: '', description: '', quantity: '', unit: '', mrp: '', discount: '' });
                 },
 
                 duplicateItem(index) {
@@ -252,9 +235,7 @@
                 },
 
                 removeItem(index) {
-                    if (this.items.length > 1) {
-                        this.items.splice(index, 1);
-                    }
+                    if (this.items.length > 1) this.items.splice(index, 1);
                 }
             }));
         });

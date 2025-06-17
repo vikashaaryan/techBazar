@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,10 +12,15 @@ return new class extends Migration
     {
         Schema::create('quotes_items', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('quotation_id')->constrained()->onDelete('CASCADE');
-            // $table->foreignId('product_id');
-            // $table->string('quantity');
-            // $table->decimal('price');
+            $table->foreignId('quote_id')->constrained('quotes')->onDelete('cascade');
+            $table->foreignId('product_id')->constrained('products');
+
+            $table->text('description')->nullable();
+            $table->unsignedInteger('quantity');
+            $table->string('unit');
+            $table->decimal('mrp', 10, 2);       // Use 'mrp' instead of 'price' to match your form
+            $table->decimal('discount', 10, 2)->default(0);
+            $table->decimal('tax', 5, 2)->default(0);
             $table->timestamps();
         });
     }

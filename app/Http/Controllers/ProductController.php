@@ -21,7 +21,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
-        return view("manager.products.manage-products",compact('products'));
+        return view("manager.products.manage-products", compact('products'));
     }
 
     /**
@@ -91,5 +91,21 @@ class ProductController extends Controller
     {
         $product->delete();
         return redirect()->back();
+    }
+
+    public function indexJson()
+    {
+        // Send minimal data for dropdowns
+        return Product::select('id', 'name')->get();
+    }
+
+    public function details(Product $product)
+    {
+        return response()->json([
+            'description' => $product->description,
+            'mrp' => $product->mrp,
+            'sell_price' => $product->sell_price,
+            'discount' => $product->mrp - $product->sell_price
+        ]);
     }
 }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('quotes', function (Blueprint $table) {
             $table->id();
-            $table->string('quotation-no');
+            $table->string('quotation_no');
             $table->date('valid_date');
             $table->enum('status',['sent','draft','accepted','rejected','cancelled']);
             $table->foreignId('customer_id')->constrained()->onDelete('CASCADE');
