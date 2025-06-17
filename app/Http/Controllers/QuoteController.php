@@ -29,26 +29,31 @@ class QuoteController extends Controller
     {
         $products = Product::all();
         $customers = Customer::all();
-        return view('manager.quotes.create-quote', compact('customers', 'products'));
+
+        $quotation_no = Quote::generateQuotationNumber(); // Use your model method
+
+        return view('manager.quotes.create-quote', compact('customers', 'products', 'quotation_no'));
     }
+
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        // Validate main quotation data
+        $generatedQuotationNo = Quote::generateQuotationNumber();
+
+
+        // Step 2: Validate request (no need to validate user-inputted quotation_no)
         $validatedData = $request->validate([
-            'quotation_no' => 'required|string|max:255|unique:quotes,quotation_no',
             'valid_date' => 'required|date|after_or_equal:today',
             'status' => 'required|in:sent,draft,accepted,rejected,cancelled',
             'customer_id' => 'required|exists:customers,id',
             'notes' => 'nullable|string|max:1000',
             'subtotal' => 'required|numeric',
-            'tax' => 'required|numeric', // Added max 100 for percentage
+            'tax' => 'required|numeric',
             'total' => 'required|numeric',
 
-            // Validate products array
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.description' => 'nullable|string|max:65535',
@@ -58,13 +63,12 @@ class QuoteController extends Controller
             'items.*.discount' => 'required|numeric|min:0|max:99999999.99',
         ]);
 
-        // Use database transaction for data integrity
         DB::beginTransaction();
 
         try {
-            // Create the quotation
+            // Step 3: Create quote using auto-generated quotation number
             $quotation = Quote::create([
-                'quotation_no' => $validatedData['quotation_no'],
+                'quotation_no' => $generatedQuotationNo,
                 'valid_date' => $validatedData['valid_date'],
                 'status' => $validatedData['status'],
                 'customer_id' => $validatedData['customer_id'],
@@ -72,14 +76,10 @@ class QuoteController extends Controller
                 'subtotal' => $validatedData['subtotal'],
                 'tax' => $validatedData['tax'],
                 'total' => $validatedData['total'],
-               
             ]);
 
-            // Create quotation items
+            // Step 4: Create items
             foreach ($validatedData['items'] as $item) {
-                $netPrice = $item['mrp'] - $item['discount'];
-                $taxAmount = $netPrice * $validatedData['tax'] / 100;
-
                 QuotesItems::create([
                     'quote_id' => $quotation->id,
                     'product_id' => $item['product_id'],
@@ -88,14 +88,11 @@ class QuoteController extends Controller
                     'unit' => $item['unit'],
                     'mrp' => $item['mrp'],
                     'discount' => $item['discount'],
-                  
+                    'tax' => $validatedData['tax'], // Optional: store total tax per item
                 ]);
             }
 
             DB::commit();
-
-            // Optional: Generate PDF or send email notification here
-            // $this->generateQuotationPDF($quotation->id);
 
             ToastMagic::success('Quotation created successfully!');
             return redirect()->route('quotations.show', $quotation);
@@ -104,16 +101,12 @@ class QuoteController extends Controller
             DB::rollBack();
             Log::error('Quotation creation failed: ' . $e->getMessage());
 
-            // More specific error message
-            $errorMessage = 'Failed to create quotation. ';
-            $errorMessage .= str_contains($e->getMessage(), 'quotation_no')
-                ? 'Quotation number already exists.'
-                : 'Please try again.';
-
-          
-            return redirect()->back()->withInput();
+            return redirect()->back()->withInput()->withErrors([
+                'error' => 'Failed to create quotation. ' . $e->getMessage()
+            ]);
         }
     }
+
 
 
     /**

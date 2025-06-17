@@ -11,5 +11,6 @@ class Customer extends Model
     {
         return $this->hasOne(Address::class, "id", "address_id");
     }
+    
    
 }

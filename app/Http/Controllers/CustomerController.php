@@ -19,7 +19,7 @@ class CustomerController extends Controller
         return view('manager.customer.managecustomer', compact('customers'));
     }
 
-    
+
 
     /**
      * Show the form for creating a new resource.
@@ -80,7 +80,7 @@ class CustomerController extends Controller
      */
     public function show($id)
     {
-        
+
     }
 
     /**
@@ -105,5 +105,19 @@ class CustomerController extends Controller
     public function destroy(Customer $customer)
     {
         $customer->delete();
-        return redirect()->back();}
+        return redirect()->back();
+    }
+
+    public function fetchInfo($id)
+    {
+        $customer = Customer::with('address')->findOrFail($id);
+
+        return response()->json([
+            'address' => $customer->address ? $customer->address->street . ', ' . $customer->address->city . ', ' . $customer->address->state . ' - ' . $customer->address->zipcode : 'Address not available',
+            'email' => $customer->email ?? '',
+            'phone' => $customer->phone ?? '',
+        ]);
+    }
+
+
 }

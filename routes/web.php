@@ -24,12 +24,15 @@ Route::resource('supplier',SupplierController::class);
 
 Route::resource('category',CategoryController::class);
 
+Route::get('/customers/{id}/info', [CustomerController::class, 'fetchInfo']);
+
+
 // Custom AJAX routes
-Route::get('/products/json', [App\Http\Controllers\ProductController::class, 'indexJson'])->name('products.json');
-Route::get('/products/{product}/details', [App\Http\Controllers\ProductController::class, 'details'])->name('products.details');
+Route::get('/products/json', [ProductController::class, 'indexJson'])->name('products.json');
+Route::get('/products/{product}/details', [ProductController::class, 'details'])->name('products.details');
 
 // Resource route (standard CRUD)
-Route::resource('product', App\Http\Controllers\ProductController::class);
+Route::resource('product', ProductController::class);
 
 // Route::resource('product',ProductController::class);
 Route::resource('quotes', QuoteController::class);

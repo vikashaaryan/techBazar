@@ -17,10 +17,17 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label>Quotation Number</label>
-                                <input type="text" name="quotation_no" class="w-full border-b-2 py-2 px-1 bg-gray-50">
+                                <input type="text" name="quotation_no"
+                                    value="{{ old('quotation_no', $quotation_no ?? '') }}" readonly
+                                    class="w-full border-b-2 py-2 px-1 bg-gray-50">
                                 @error('quotation_no')<p class="text-red-500 text-xs">{{ $message }}</p>@enderror
                             </div>
 
+                            <div>
+                                <label>Quotation Date</label>
+                                <input type="date" value="<?= date('Y-m-d')?>" name="quotation_date"
+                                    class="w-full border-b-2 py-2 px-1 bg-gray-50">
+                            </div>
                             <div>
                                 <label>Valid Till</label>
                                 <input type="date" name="valid_date" class="w-full border-b-2 py-2 px-1 bg-gray-50">
@@ -41,26 +48,35 @@
                         </div>
 
                         <!-- Customer -->
-                        <div class="bg-blue-50 p-4 border rounded-lg space-y-4">
-                            <h3 class="text-lg font-semibold text-gray-800">Customer Information</h3>
-                            <select name="customer_id" class="w-full p-2 border rounded-lg">
-                                <option>Select Customer</option>
-                                @foreach($customers as $customer)
-                                    <option value="{{ $customer->id }}">{{ $customer->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('customer_id')<p class="text-red-500 text-xs">{{ $message }}</p>@enderror
+                        <div class="flex justify-between">
+                            <div class="bg-blue-50 p-4 border rounded-lg space-y-4">
+                                <h3 class="text-lg font-semibold text-gray-800">Customer Information</h3>
+                                <select id="customerSelect" name="customer_id" class="w-full p-2 border rounded-lg">
+                                    <option value="">Select Customer</option>
+                                    @foreach($customers as $customer)
+                                        <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                                    @endforeach
+                                </select>
 
-                            <div class="flex items-center">
-                                <div class="flex-grow border-t"></div>
-                                <span class="mx-4 text-gray-500">OR</span>
-                                <div class="flex-grow border-t"></div>
+                                @error('customer_id')<p class="text-red-500 text-xs">{{ $message }}</p>@enderror
+
+                                <div class="flex items-center">
+                                    <div class="flex-grow border-t"></div>
+                                    <span class="mx-4 text-gray-500">OR</span>
+                                    <div class="flex-grow border-t"></div>
+                                </div>
+
+                                <a href="{{ route('customer.index') }}"
+                                    class="block w-full bg-blue-600 text-white py-2 rounded text-center hover:bg-blue-700">
+                                    + Add New Customer
+                                </a>
+                            </div>
+                            <div id="customer-info" class="bg-white p-4 border rounded-lg text-sm text-gray-700 hidden">
+                                <p><strong>Address:</strong> <span id="customer-address"></span></p>
+                                <p><strong>Email:</strong> <span id="customer-email"></span></p>
+                                <p><strong>Phone:</strong> <span id="customer-phone"></span></p>
                             </div>
 
-                            <a href="{{ route('customer.index') }}"
-                                class="block w-full bg-blue-600 text-white py-2 rounded text-center hover:bg-blue-700">
-                                + Add New Customer
-                            </a>
                         </div>
 
                         <div x-data="quotationForm()" class="space-y-4">
@@ -74,7 +90,7 @@
                                                     d="M12 4v16m8-8H4" />
                                             </svg>
                                         </button>
-                                         <button type="button" @click="removeItem(index)" class="hover:text-red-500">
+                                        <button type="button" @click="removeItem(index)" class="hover:text-red-500">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M6 18L18 6M6 6l12 12" />
@@ -258,5 +274,26 @@
                 }
             }));
         });
+        document.getElementById('customerSelect').addEventListener('change', function () {
+            const customerId = this.value;
+
+            if (!customerId) {
+                document.getElementById('customer-info').classList.add('hidden');
+                return;
+            }
+
+            fetch(`/customers/${customerId}/info`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('customer-address').textContent = data.address || 'N/A';
+                    document.getElementById('customer-email').textContent = data.email || 'N/A';
+                    document.getElementById('customer-phone').textContent = data.phone || 'N/A';
+                    document.getElementById('customer-info').classList.remove('hidden');
+                })
+                .catch(error => {
+                    console.error('Error fetching customer info:', error);
+                });
+        });
+
     </script>
 @endsection
