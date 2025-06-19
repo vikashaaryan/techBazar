@@ -96,8 +96,48 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'contact' => 'required|string|max:20',
+            'email' => 'required|email|max:255',
+            'gender' => 'required|in:male,female,other',
+            'status' => 'required|boolean',
+
+            'address' => 'required|string|max:500',
+            'city' => 'required|string|max:100',
+            'state' => 'required|string|max:100',
+            'country' => 'required|string|max:100',
+            'pincode' => 'required|string|max:10',
+        ]);
+
+        $customer->update([
+            'name' => $request->name,
+            'contact' => $request->contact,
+            'email' => $request->email,
+            'gender' => $request->gender,
+            'status' => $request->status,
+        ]);
+
+        $addressData = [
+            'address' => $request->address,
+            'purpose' => $request->purpose ?? 'billing', // optional
+            'city' => $request->city,
+            'state' => $request->state,
+            'country' => $request->country,
+            'pincode' => $request->pincode,
+        ];
+
+        if ($customer->address) {
+            $customer->address->update($addressData);
+        } else {
+            $customer->address()->create($addressData);
+        }
+
+        ToastMagic::success('Customer updated successfully!');
+        return redirect()->back();
     }
+
+
 
     /**
      * Remove the specified resource from storage.
@@ -105,6 +145,7 @@ class CustomerController extends Controller
     public function destroy(Customer $customer)
     {
         $customer->delete();
+        toastMagic::success('Customer deleted successfully!');
         return redirect()->back();
     }
 

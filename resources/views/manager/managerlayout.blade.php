@@ -9,15 +9,15 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/alpinejs" defer></script>
-                        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-                        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-<script>
-document.addEventListener('alpine:init', () => {
-  Alpine.data('quotationForm', () => ({
-    // ... your methods & data
-  }));
-});
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('quotationForm', () => ({
+                // ... your methods & data
+            }));
+        });
+    </script>
 
     {!! ToastMagic::styles() !!}
 </head>

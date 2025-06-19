@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Quote;
@@ -98,7 +96,7 @@ class QuoteController extends Controller
             return redirect()->route('quotations.show', $quotation);
 
         } catch (\Exception $e) {
-            DB::rollBack();
+            Db::rollBack();
             Log::error('Quotation creation failed: ' . $e->getMessage());
 
             return redirect()->back()->withInput()->withErrors([

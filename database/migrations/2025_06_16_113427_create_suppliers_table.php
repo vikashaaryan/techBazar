@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('phone')->unique();
             $table->foreignId('address_id')->constrained('addresses')->onDelete('cascade');
             $table->text('notes')->nullable();
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }

@@ -15,7 +15,8 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        return view("manager.supplier.manage-supplier");
+        $suppliers = Supplier::all();
+        return view("manager.supplier.manage-supplier", compact('suppliers'));
     }
 
     /**
@@ -38,6 +39,7 @@ class SupplierController extends Controller
             'email' => 'required|email|max:255|unique:suppliers,email',
             'phone' => 'required|string|max:20|unique:suppliers,phone',
             'notes' => 'nullable|string|max:500',
+            'status' => 'nullable|boolean',
 
             // Address
 
@@ -93,14 +95,57 @@ class SupplierController extends Controller
      */
     public function update(Request $request, Supplier $supplier)
     {
-        //
+        $request->validate([
+            'supplier_name' => 'required|string|max:255',
+            'company'       => 'required|string|max:255',
+            'email'         => 'required|email|max:255|unique:suppliers,email,' . $supplier->id,
+            'phone'         => 'required|string|max:20|unique:suppliers,phone,' . $supplier->id,
+            'notes'         => 'nullable|string|max:500',
+            'status'        => 'required|boolean',
+
+            'address'       => 'required|string|max:500',
+            'city'          => 'required|string|max:100',
+            'state'         => 'required|string|max:100',
+            'country'       => 'required|string|max:100',
+            'pincode'       => 'required|string|max:10',
+        ]);
+
+        // Update Supplier data
+        $supplier->update([
+            'supplier_name' => $request->supplier_name,
+            'company'       => $request->company,
+            'email'         => $request->email,
+            'phone'         => $request->phone,
+            'notes'         => $request->notes,
+            'status'        => $request->status,
+        ]);
+
+        // Prepare address data
+        $addressData = [
+            'address'   => $request->address,
+            'purpose'   => $request->purpose ?? 'billing', // default if not passed
+            'city'      => $request->city,
+            'state'     => $request->state,
+            'country'   => $request->country,
+            'pincode'   => $request->pincode,
+        ];
+
+        // Update or create related address
+        if ($supplier->address) {
+            $supplier->address->update($addressData);
+        } else {
+            $supplier->address()->create($addressData);
+        }
+
+        ToastMagic::success('Supplier updated successfully!');
+        return redirect()->back();
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+  
     public function destroy(Supplier $supplier)
     {
-        //
+        $supplier->delete();
+        ToastMagic::success('Supplier deleted successfully!');
+        return redirect()->back();
     }
 }
