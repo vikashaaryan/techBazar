@@ -137,8 +137,8 @@ class SupplierController extends Controller
             $supplier->address()->create($addressData);
         }
 
-        ToastMagic::success('Supplier updated successfully!');
         return redirect()->back();
+        ToastMagic::success('Supplier updated successfully!');
     }
 
   

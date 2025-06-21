@@ -133,8 +133,8 @@ class CustomerController extends Controller
             $customer->address()->create($addressData);
         }
 
-        ToastMagic::success('Customer updated successfully!');
         return redirect()->back();
+        ToastMagic::success('Customer updated successfully!');
     }
 
 
@@ -149,16 +149,7 @@ class CustomerController extends Controller
         return redirect()->back();
     }
 
-    public function fetchInfo($id)
-    {
-        $customer = Customer::with('address')->findOrFail($id);
-
-        return response()->json([
-            'address' => $customer->address ? $customer->address->street . ', ' . $customer->address->city . ', ' . $customer->address->state . ' - ' . $customer->address->zipcode : 'Address not available',
-            'email' => $customer->email ?? '',
-            'phone' => $customer->phone ?? '',
-        ]);
-    }
+    
 
 
 }

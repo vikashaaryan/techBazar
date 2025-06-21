@@ -211,8 +211,10 @@
             </div>
         </div>
        @include('manager.supplier.component.add-supplier')
+       @include('manager.supplier.component.edit-supplier')
        <!-- Supplier Edit Modal -->
 
 
     </div>
+   
 @endsection

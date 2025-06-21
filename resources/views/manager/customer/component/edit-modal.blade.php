@@ -13,7 +13,7 @@
                 <!-- Modal Header -->
                 <div class="bg-blue-600 px-6 py-4 flex justify-between items-center">
                     <h3 class="text-lg font-medium text-white">Edit Customer</h3>
-                    <button data-modal-hide="editCustomerModal-{{ $customer->id }}"
+                    <button  data-modal-hide="editCustomerModal"
                         class="text-white hover:text-gray-200">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -119,6 +119,19 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('[data-modal-hide]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const modalId = btn.getAttribute('data-modal-hide');
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+        });
+    });
+</script>
 
 @endforeach
 

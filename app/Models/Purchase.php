@@ -73,4 +73,9 @@ class Purchase extends Model
     {
         return $query->where('payment_status', 'partial');
     }
+    // In app/Models/Purchase.php
+    public function purchaseItems()
+    {
+        return $this->hasMany(PurchaseItem::class);
+    }
 }
