@@ -41,10 +41,10 @@
                 <div id="dropdownQuotes"
                     class="z-10 hidden absolute bg-white text-black divide-y divide-gray-100 rounded-lg shadow w-44">
                     <ul class="py-2 text-sm">
-                        <li><a href="{{ route('quotes.create') }}" class="block px-4 py-2 hover:bg-gray-100">Create
+                        <li><a href="{{ route('createQuotation') }}" class="block px-4 py-2 hover:bg-gray-100">Create
                                 Quote</a>
                         </li>
-                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">View Quotes</a></li>
+                        <li><a href="{{ route('showQuotation') }}" class="block px-4 py-2 hover:bg-gray-100">View Quotes</a></li>
                     </ul>
                 </div>
             </div>
@@ -62,9 +62,9 @@
                     class="z-10 hidden absolute bg-white text-black divide-y divide-gray-100 rounded-lg shadow w-44">
                     <ul class="py-2 text-sm">
                         <li><a data-modal-target="default-modal-invoice" data-modal-toggle="default-modal-invoice"
-                                href="#default-modal-invoice" class="block px-4 py-2 hover:bg-gray-100">Create
+                                href="{{route('createInvoice')}}" class="block px-4 py-2 hover:bg-gray-100">Create
                                 Invoice</a></li>
-                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">View Invoices</a></li>
+                        <li><a href="{{ route('showInvoice') }}" class="block px-4 py-2 hover:bg-gray-100">View Invoices</a></li>
                     </ul>
                 </div>
             </div>

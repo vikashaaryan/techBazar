@@ -1,3 +1,5 @@
+old quotation form------------------------------------------------
+
 @extends('manager.managerlayout')
 
 @section('title', 'Create-Quote')

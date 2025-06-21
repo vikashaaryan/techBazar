@@ -8,6 +8,12 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\SupplierController;
+use App\Livewire\CreateQuotation;
+use App\Livewire\Invoice\CreateInvoice;
+use App\Livewire\Invoice\ShowInvoice;
+use App\Livewire\Quotation;
+use App\Livewire\Quote;
+use App\Livewire\ShowQuotation;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/',[HomeController::class,'home'])->name('home');
@@ -28,15 +34,15 @@ Route::resource('purchase',PurchaseController::class);
 
 Route::get('/customers/{id}/info', [CustomerController::class, 'fetchInfo']);
 
-
-// Custom AJAX routes
-Route::get('/products/json', [ProductController::class, 'indexJson'])->name('products.json');
-Route::get('/products/{product}/details', [ProductController::class, 'details'])->name('products.details');
-
-// Resource route (standard CRUD)
 Route::resource('product', ProductController::class);
 
-// Route::resource('product',ProductController::class);
-Route::resource('quotes', QuoteController::class);
 
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+
+// quotation by livewire
+Route::get('/quotation/create', CreateQuotation::class)->name('createQuotation');
+Route::get('/quotations', ShowQuotation::class)->name('showQuotation');
+
+//Invoice Route By Livewire
+Route::get('/invoice/create', CreateInvoice::class)->name('createInvoice');
+Route::get('/invoices', ShowInvoice::class)->name('showInvoice');
