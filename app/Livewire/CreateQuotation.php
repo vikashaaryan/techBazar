@@ -10,16 +10,10 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class CreateQuotation extends Component
-{ public $status = '', $notes;
-    public $subtotal = 0;
-    public $tax = 0;
-    public $taxRate = 0.18;
-    public $total = 0;
-    public $quotation_no;
-    public $datePrefix;
-    public $lastQuote;
-    public $lastIncrement;
-    public $newIncrement, $validQuotationDate;
+{
+    public $status = '', $notes;
+    public $subtotal = 0, $tax = 0, $taxRate = 0.18, $total = 0;
+    public $quotation_no, $datePrefix, $lastQuote, $lastIncrement, $newIncrement, $validQuotationDate;
     public $search = '', $selectedCustomer = null, $isSearching = false, $customers = [];
     public $products;
 
@@ -166,7 +160,7 @@ class CreateQuotation extends Component
 
     public function createQuote()
     {
-         $this->validate([
+        $this->validate([
             // quote validation 
             'status' => 'required',
 
@@ -206,61 +200,9 @@ class CreateQuotation extends Component
 
     }
 
-    public function storeData()
-    {
-        $this->validate([
-            'items.*.product_id' => 'required|exists:products,id',
-            'items.*.quantity' => 'required|numeric|min:1',
-            'items.*.mrp' => 'required|numeric|min:0',
-            'items.*.discount' => 'nullable|numeric|min:0|max:100',
-            'items.*.unit' => 'required|string',
-            'selectedCustomer' => 'required|array', // If using selectedCustomer
-            'selectedCustomer.id' => 'required|exists:customers,id'
-        ]);
-        DB::beginTransaction();
-
-        try {
-            $quote = Quote::create([
-                'quotation_no' => $this->quotation_no,
-                'quotation_date' => now(),
-                'valid_date' => $this->validQuotationDate,
-                'customer_id' => $this->selectedCustomer['id'],
-                'subtotal' => $this->subtotal,
-                'tax' => $this->tax,
-                'total' => $this->total,
-                'status' => 'Draft', // or $this->status if dynamic
-                'notes' => $this->notes ?? null,
-
-            ]);
-
-
-            foreach ($this->items as $item) {
-                QuotesItems::create([
-                    'quote_id' => $quote->id,
-                    'product_id' => $item['product_id'],
-                    'description' => $item['description'] ?? null,
-                    'quantity' => $item['quantity'],
-                    'unit' => $item['unit'],
-                    'mrp' => $item['mrp'],
-                    'discount' => $item['discount'] ?? 0,
-                    'tax' => 18, // Assuming fixed
-                ]);
-            }
-
-            DB::commit();
-
-            session()->flash('success', 'Quotation created successfully!');
-            return redirect()->route('quotes.index'); // Change route if needed
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            logger()->error('Quote creation failed', ['error' => $e->getMessage()]);
-            session()->flash('error', 'Failed to create quotation.');
-        }
-    }
     public function render()
     {
         $customers = Customer::where('name', 'like', '%' . $this->search . '%')->get();
-        return view('livewire.quotation.create-quotation',compact('customers'));
+        return view('livewire.quotation.create-quotation', compact('customers'));
     }
 }
