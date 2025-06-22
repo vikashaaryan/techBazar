@@ -28,7 +28,7 @@
                             <select wire:model="status" class="w-full border-b-2 py-2 px-1 bg-gray-50">
                                 <option value="">Select Status</option>
                                 <option value="draft" selected>Draft</option>
-                                <option value="sent">Sent</option>
+                                <option value="sent" >Sent</option>
                                 <option value="accepted">Accepted</option>
                                 <option value="rejected">Rejected</option>
                                 <option value="cancelled">Cancelled</option>
@@ -161,14 +161,20 @@
 
                                 <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <select wire:model="items.{{ $index }}.product_id"
-                                            wire:change="productSelected({{ $index }})"
-                                            class="w-full border rounded px-2 py-2 text-sm">
-                                            <option value="">Select Product</option>
-                                            @foreach($products as $product)
-                                                <option value="{{ $product->id }}">{{ $product->name }}</option>
+                                      <select wire:model="items.{{ $index }}.product_id" wire:change="productSelected({{ $index }})">
+                                            <option value="">-- Select Product --</option>
+                                            @foreach ($products as $product)
+                                                <option 
+                                                    value="{{ $product->id }}" 
+                                                    @if(collect($items)->pluck('product_id')->contains($product->id) && $items[$index]['product_id'] != $product->id)
+                                                        disabled
+                                                    @endif
+                                                >
+                                                    {{ $product->name }}
+                                                </option>
                                             @endforeach
                                         </select>
+
                                         @error('items.0.product_id')
                                             <p class="text-red-500 text-xs">{{ $message }}</p>
                                         @enderror
@@ -185,7 +191,7 @@
                                             Item Total: ₹{{ number_format($item['total'] ?? 0, 2) }}
                                         </div>
                                         <div class="text-right text-sm font-medium text-gray-600">
-                                            Item Discount Amount: ₹
+                                            Item Discount Amount: ₹{{ number_format($item['discount_amount'] ?? 0, 2) }}
                                         </div>
                                     </div>
 
@@ -193,14 +199,6 @@
                                         <input type="number" wire:model.change="items.{{ $index }}.quantity"
                                             placeholder="Qty" class="col-span-2 border rounded px-2 py-1 text-sm" />
                                         @error('items.0.quantity')
-                                            <p class="text-red-500 text-xs">{{ $message }}</p>
-                                        @enderror
-                                        <select wire:model="items.{{ $index }}.unit"
-                                            class="col-span-2 border rounded px-2 py-1 text-sm">
-                                            <option value="piece">Piece</option>
-                                            <option value="box">Box</option>
-                                        </select>
-                                        @error('items.0.unit')
                                             <p class="text-red-500 text-xs">{{ $message }}</p>
                                         @enderror
 
@@ -239,9 +237,9 @@
                             </div>
                             <div>
                                 <label class="block mb-1">Total Discount</label>
-                                <input type="text" wire:model="discount" class="w-full border-b-2 py-1 px-1 bg-white"
+                                <input type="text" wire:model="total_discount" value="₹{{ number_format($total_discount, 2) }}" class="w-full border-b-2 py-1 px-1 bg-white"
                                     value="" readonly>
-                                @error('discount')
+                                @error('total_discount')
                                     <p class="text-red-500 text-xs">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -264,6 +262,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- payment Section -->
                     <div class="bg-gray-50 rounded-lg p-4 border">
                         <div class="grid grid-cols-2">
                             <div>

@@ -12,9 +12,9 @@ use Livewire\Component;
 
 class CreateInvoice extends Component
 {
-    public $status = '', $payment_status = '',$method = '', $notes, $due_date, $amount_paid;
+    public $status = '', $payment_status = '', $method = '', $notes, $due_date, $amount_paid;
     public $datePrefix, $lastInvoice, $lastIncrement, $invoice_no, $newIncrement;
-    public $subtotal = 0, $tax = 0, $taxRate = 0.18, $total = 0;
+    public $subtotal = 0, $tax = 0, $taxRate = 0.18, $total = 0, $total_discount = 0;
     public $search = '', $selectedCustomer = null, $isSearching = false, $customers = [];
     public $products;
     public function mount()
@@ -71,7 +71,7 @@ class CreateInvoice extends Component
             'discount' => 0,
             'sell_price' => 0, // Optional if you want to store it
             'total' => 0, // Live computed total for the item
-            'discount_amount' => 0,      
+            'discount_amount' => 0,
         ]
     ];
     public function addItem()
@@ -92,17 +92,30 @@ class CreateInvoice extends Component
     {
         $productId = $this->items[$index]['product_id'] ?? null;
 
-        if ($productId) {
-            $product = Product::find($productId);
+        if (!$productId)
+            return;
 
-            if ($product) {
-                $this->items[$index]['mrp'] = $product->mrp;
-                $this->items[$index]['unit'] = $product->unit ?? 'piece';
-                $this->items[$index]['description'] = $product->description ?? '';
-                // Add more fields if needed
+        // ✅ Check if this product is already selected in another item
+        foreach ($this->items as $i => $item) {
+            if ($i !== (int) $index && $item['product_id'] == $productId) {
+                $this->dispatchBrowserEvent('duplicate-product', ['message' => 'This product is already selected in another row.']);
+                // Reset the product_id to null
+                $this->items[$index]['product_id'] = null;
+                return;
             }
         }
+
+        $product = Product::find($productId);
+        if ($product) {
+            $this->items[$index]['mrp'] = $product->mrp;
+            $this->items[$index]['unit'] = $product->unit ?? 'piece';
+            $this->items[$index]['description'] = $product->description ?? '';
+        }
+
+        $this->calculateItemTotal($index);
+        $this->calculateSummary();
     }
+
 
     public function updatedItems($value, $key)
     {
@@ -115,6 +128,7 @@ class CreateInvoice extends Component
             if ($product) {
                 $item['mrp'] = $product->mrp;
                 $item['sell_price'] = $product->sell_price;
+                $item['discount_amount'] = ($product->mrp - $product->sell_price);
                 $item['discount'] = round((($product->mrp - $product->sell_price) / $product->mrp) * 100, 2);
             }
         }
@@ -132,17 +146,29 @@ class CreateInvoice extends Component
         $qty = $item['quantity'] ?? 1;
         $discount = $item['discount'] ?? 0;
 
+        // Calculate per unit discount amount
         $discountAmount = ($mrp * $discount) / 100;
+
+        // ✅ Save total discount for that line (unit discount × quantity)
+        $item['discount_amount'] = round($discountAmount * $qty, 2);
+
+        // Net total for this line
         $netPrice = $mrp - $discountAmount;
         $item['total'] = round($netPrice * $qty, 2);
     }
 
+
     public function calculateSummary()
     {
         $this->subtotal = collect($this->items)->sum(fn($item) => $item['total'] ?? 0);
+
+        // ✅ Corrected line to calculate total_discount
+        $this->total_discount = collect($this->items)->sum(fn($item) => $item['discount_amount'] ?? 0);
+
         $this->tax = round($this->subtotal * $this->taxRate, 2);
         $this->total = round($this->subtotal + $this->tax, 2);
     }
+
 
     public function removeItem($index)
     {
@@ -166,7 +192,7 @@ class CreateInvoice extends Component
             'subtotal' => $this->subtotal,
             'tax' => $this->tax,
             'total' => $this->total,
-            'discount' => '50',
+            'discount' => $this->total_discount,
             'notes' => $this->notes,
         ]);
 
@@ -174,7 +200,7 @@ class CreateInvoice extends Component
             'customer_id' => $this->selectedCustomer['id'],
             'invoice_id' => $invoice->id,
             'payment_status' => $this->payment_status,
-            'discount' => '20',
+            'discount' => $this->total_discount,
             'tax' => $this->tax,
             'total_amount' => $this->total,
             'amount_paid' => $this->amount_paid,
@@ -184,20 +210,20 @@ class CreateInvoice extends Component
             SalesItems::create([
                 'sale_id' => $sales->id,
                 'product_id' => $item['product_id'],
-                'discount' => $item['discount'] ?? 0,
+                'discount' => $item['discount_amount'] ?? 0,
             ]);
         }
-        $payments = Payment::create([
-                 'invoice_id' =>$invoice->id,
-                 'type' =>'customer',
-                 'payment_for' =>'sell',
-                 'sale_id' => $sales->id,
-                 'method' =>$this->method,
-                 'amount_paid' =>$this->amount_paid,
-                 'payment_status'=> $this->payment_status,
+        Payment::create([
+            'invoice_id' => $invoice->id,
+            'type' => 'customer',
+            'payment_for' => 'sell',
+            'sale_id' => $sales->id,
+            'method' => $this->method,
+            'amount_paid' => $this->amount_paid,
+            'payment_status' => $this->payment_status,
         ]);
 
-        
+
         $this->redirect('/hi', navigate: true); // Change route if needed
     }
 
