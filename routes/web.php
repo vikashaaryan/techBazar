@@ -8,6 +8,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\SupplierController;
+use App\Livewire\Admin\Dashboard;
+use App\Livewire\Admin\Sales;
 use App\Livewire\CreateQuotation;
 use App\Livewire\Invoice\CreateInvoice;
 use App\Livewire\Invoice\ShowInvoice;
@@ -36,8 +38,9 @@ Route::get('/customers/{id}/info', [CustomerController::class, 'fetchInfo']);
 
 Route::resource('product', ProductController::class);
 
-
-Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+// livewire admin
+Route::get('/admin', Dashboard::class)->name('admin.dashboard');
+Route::get('/admin/sales', Sales::class)->name('admin.sales');
 
 // quotation by livewire
 Route::get('/quotation/create', CreateQuotation::class)->name('createQuotation');

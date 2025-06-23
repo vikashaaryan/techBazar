@@ -1,5 +1,5 @@
 <nav
-    class="bg-white dark:bg-dark-800 border-b border-gray-200 dark:border-gray-700/50 px-6 py-3 flex items-center justify-between">
+    class="bg-white dark:bg-dark-800 border-b border-gray-200 dark:border-gray-700/50 px-6 py-3 flex items-center justify-between fixed w-[80%]">
     <!-- Left side - Search and menu button (mobile) -->
     <div class="flex items-center space-x-4">
         <button class="md:hidden text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white"
@@ -16,7 +16,7 @@
     </div>
 
     <!-- Right side - User and notifications -->
-    <div class="flex items-center space-x-6">
+    <div class="flex items-center space-x-2">
         <button class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white relative">
             <i class="fas fa-bell text-xl"></i>
             <span class="notification-dot">3</span>
