@@ -15,8 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('sale_id')->constrained()->onDelete('CASCADE');
             $table->foreignId('product_id')->constrained()->onDelete('CASCADE');
+            $table->foreignId('invoice_id')->nullable();
             $table->string('discount');
-            $table->timestamps();
+            $table->string('qty');
+            $table->timestamps();;
         });
     }
 

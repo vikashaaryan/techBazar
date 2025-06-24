@@ -65,7 +65,7 @@
                         <span class="text-sm font-medium text-gray-700 group-hover:text-purple-600">Enter Payment</span>
                     </a>
             
-                    <a href="#"
+                    <a href="{{route('exchange.view')}}"
                         class="group flex flex-col items-center p-5 rounded-lg hover:bg-gray-100 transition-colors border border-gray-100">
                         <div class="bg-red-100 p-3 rounded-full mb-3 group-hover:bg-red-200 transition-colors">
                             <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">

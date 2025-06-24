@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('quotation_id')->nullable();
             $table->foreignId('customer_id')->constrained()->onDelete('CASCADE');
             $table->enum('status',['sent','draft','accepted','rejected','cancelled']);
-            $table->date('due_date');
+            $table->date('due_date')->nullable();
             $table->decimal('subtotal');
             $table->string('tax');
             $table->decimal('total');

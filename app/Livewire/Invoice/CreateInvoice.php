@@ -211,6 +211,7 @@ class CreateInvoice extends Component
                 'sale_id' => $sales->id,
                 'product_id' => $item['product_id'],
                 'discount' => $item['discount_amount'] ?? 0,
+                'invoice_id' => $invoice->id,
             ]);
         }
         Payment::create([
