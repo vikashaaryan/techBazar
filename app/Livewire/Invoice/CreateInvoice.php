@@ -204,7 +204,6 @@ class CreateInvoice extends Component
             'tax' => $this->tax,
             'total_amount' => $this->total,
             'amount_paid' => $this->amount_paid,
-
         ]);
         foreach ($this->items as $item) {
             SalesItems::create([

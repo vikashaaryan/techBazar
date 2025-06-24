@@ -11,4 +11,19 @@ class Sales extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function customer()
+    {
+        return $this->hasOne(Customer::class, 'id', 'customer_id');
+    }
+    public function invoice()
+    {
+        return $this->hasOne(Invoice::class, 'id', 'invoice_id');
+    }
+
+    public function items()
+    {
+        return $this->hasMany(SalesItems::class, 'sale_id');
+    }
+
 }

@@ -9,8 +9,13 @@ class Customer extends Model
     protected $guarded = [];
     public function address()
     {
-        return $this->hasOne(Address::class, "id", "address_id");
+        return $this->belongsTo(Address::class, "address_id");
     }
-    
-   
+
+    public function sales()
+    {
+        return $this->hasMany(Sales::class); // or Invoice::class
+    }
+
+
 }
