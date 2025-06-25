@@ -9,8 +9,10 @@ use App\Models\Product;
 use App\Models\Sales;
 use App\Models\SalesItems;
 use Devrabiul\ToastMagic\Facades\ToastMagic;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
+#[Title('Invoice')]
 class CreateInvoice extends Component
 {
     public $status = 'draft', $payment_status = 'paid', $method = 'cash', $notes, $due_date, $amount_paid;
@@ -53,7 +55,6 @@ class CreateInvoice extends Component
         $this->selectedCustomer = Customer::find($customerId);
         $this->search = ''; // Clear search term after selection
     }
-
     public function clearSelection()
     {
         $this->selectedCustomer = null;
@@ -268,7 +269,7 @@ class CreateInvoice extends Component
             'payment_status' => $this->payment_status,
         ]);
 
-
+        ToastMagic::success('Invoice Created Successfully');
         $this->redirect('/invoices'); 
     }
 

@@ -6,13 +6,16 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Quote;
 use App\Models\QuotesItems;
+use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
+#[Title('Quotation')]
 class CreateQuotation extends Component
 {
-    public $status = '', $notes;
-    public $subtotal = 0, $tax = 0, $taxRate = 0.18, $total = 0;
+    public $status = 'draft', $notes;
+    public $subtotal = 0, $tax = 0, $taxRate = 0.18, $total = 0, $total_discount = 0;
     public $quotation_no, $datePrefix, $lastQuote, $lastIncrement, $newIncrement, $validQuotationDate;
     public $search = '', $selectedCustomer = null, $isSearching = false, $customers = [];
     public $products;
@@ -62,7 +65,6 @@ class CreateQuotation extends Component
         $this->customers = [];
     }
     // end customer logic functions
-
     public $items = [
         [
             'product_id' => null,
@@ -72,7 +74,8 @@ class CreateQuotation extends Component
             'unit' => 'piece',
             'discount' => 0,
             'sell_price' => 0, // Optional if you want to store it
-            'total' => 0,       // Live computed total for the item
+            'total' => 0, // Live computed total for the item
+            'discount_amount' => 0,
         ]
     ];
     public function addItem()
@@ -84,6 +87,7 @@ class CreateQuotation extends Component
             'quantity' => 1,
             'unit' => 'piece',
             'discount' => 0,
+            'discount_amount' => 0,
             'sell_price' => 0,
             'total' => 0, // ✅ Initialize this
         ];
@@ -92,17 +96,51 @@ class CreateQuotation extends Component
     {
         $productId = $this->items[$index]['product_id'] ?? null;
 
-        if ($productId) {
-            $product = Product::find($productId);
+        if (!$productId)
+            return;
 
-            if ($product) {
-                $this->items[$index]['mrp'] = $product->mrp;
-                $this->items[$index]['unit'] = $product->unit ?? 'piece';
-                $this->items[$index]['description'] = $product->description ?? '';
-                // Add more fields if needed
+        // ✅ Check if this product is already selected in another item
+        foreach ($this->items as $i => $item) {
+            if ($i !== (int) $index && $item['product_id'] == $productId) {
+                $this->dispatchBrowserEvent('duplicate-product', ['message' => 'This product is already selected in another row.']);
+                // Reset the product_id to null
+                $this->items[$index]['product_id'] = null;
+                return;
             }
         }
+
+        $product = Product::find($productId);
+        if ($product) {
+            $this->items[$index]['mrp'] = $product->mrp;
+            $this->items[$index]['unit'] = $product->unit ?? 'piece';
+            $this->items[$index]['description'] = $product->description ?? '';
+        }
+
+        $this->calculateItemTotal($index);
+        $this->calculateSummary();
     }
+    public function moveItemUp($index)
+    {
+        if ($index > 0) {
+            $items = $this->items;
+            $temp = $items[$index - 1];
+            $items[$index - 1] = $items[$index];
+            $items[$index] = $temp;
+            $this->items = $items;
+        }
+    }
+
+    public function moveItemDown($index)
+    {
+        if ($index < count($this->items) - 1) {
+            $items = $this->items;
+            $temp = $items[$index + 1];
+            $items[$index + 1] = $items[$index];
+            $items[$index] = $temp;
+            $this->items = $items;
+        }
+    }
+
 
     public function updatedItems($value, $key)
     {
@@ -115,6 +153,7 @@ class CreateQuotation extends Component
             if ($product) {
                 $item['mrp'] = $product->mrp;
                 $item['sell_price'] = $product->sell_price;
+                $item['discount_amount'] = ($product->mrp - $product->sell_price);
                 $item['discount'] = round((($product->mrp - $product->sell_price) / $product->mrp) * 100, 2);
             }
         }
@@ -132,18 +171,26 @@ class CreateQuotation extends Component
         $qty = $item['quantity'] ?? 1;
         $discount = $item['discount'] ?? 0;
 
+        // Calculate per unit discount amount
         $discountAmount = ($mrp * $discount) / 100;
+
+        // ✅ Save total discount for that line (unit discount × quantity)
+        $item['discount_amount'] = round($discountAmount * $qty, 2);
+
+        // Net total for this line
         $netPrice = $mrp - $discountAmount;
         $item['total'] = round($netPrice * $qty, 2);
     }
-
     public function calculateSummary()
     {
         $this->subtotal = collect($this->items)->sum(fn($item) => $item['total'] ?? 0);
+
+        // ✅ Corrected line to calculate total_discount
+        $this->total_discount = collect($this->items)->sum(fn($item) => $item['discount_amount'] ?? 0);
+
         $this->tax = round($this->subtotal * $this->taxRate, 2);
         $this->total = round($this->subtotal + $this->tax, 2);
     }
-
     public function removeItem($index)
     {
         unset($this->items[$index]);
@@ -158,25 +205,31 @@ class CreateQuotation extends Component
 
     public $selectedCustomerId;
 
-    public function createQuote()
+    protected function rules()
     {
-        $this->validate([
-            // quote validation 
-            'status' => 'required',
-
-            // Quotes items validation
+        return [
+            'selectedCustomer' => 'required',
+            'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|numeric|min:1',
             'items.*.mrp' => 'required|numeric|min:0',
-            'items.*.discount' => 'nullable|numeric|min:0|max:100',
-            'items.*.unit' => 'required|string',
-        ]);
+        ];
+    }
+    protected $messages = [
+        'selectedCustomer.required' => 'Please select a customer.',
+        'items.*.product_id.required' => 'Each item must have a selected product.',
+        'items.*.quantity.required' => 'Quantity is required.',
+    ];
+    public function createQuote()
+    {
+        $this->validate();
         $quote = Quote::create([
             'quotation_no' => $this->quotation_no,
             'valid_date' => $this->validQuotationDate,
             'status' => $this->status,
             'customer_id' => $this->selectedCustomer['id'],
             'subtotal' => $this->subtotal,
+            'discount' => $this->total_discount,
             'tax' => $this->tax,
             'total' => $this->total,
             'notes' => $this->notes,
@@ -190,13 +243,12 @@ class CreateQuotation extends Component
                 'quantity' => $item['quantity'],
                 'unit' => $item['unit'],
                 'mrp' => $item['mrp'],
-                'discount' => $item['discount'] ?? 0,
+                'discount' => $item['discount_amount'] ?? 0,
                 'tax' => 18, // Assuming fixed
             ]);
         }
-
-        // session()->flash('success', 'Quotation created successfully!');
-        $this->redirect('/hello'); // Change route if needed
+        ToastMagic::success('Quotation Created Successfully');
+        $this->redirect('/quotations'); 
 
     }
 

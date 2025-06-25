@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('customer_id')->constrained()->onDelete('CASCADE');
             $table->string('notes')->nullable();
             $table->decimal('subtotal');
+            $table->decimal('discount');
             $table->string('tax');
             $table->decimal('total');
             $table->timestamps();

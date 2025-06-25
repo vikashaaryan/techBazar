@@ -1,82 +1,186 @@
-<div class="min-h-screen m-3 rounded bg-white py-12">
-    <div class="max-w-6xl mx-auto bg-white shadow-xl rounded-xl overflow-hidden">
-        <h2 class="text-center text-2xl mb-4 underline">Quotation</h2>
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 underline">Quotation</h1>
+        </div>
 
-        <div class="flex flex-col md:flex-row p-8 gap-8">
-            <!-- Left Column -->
-            <div class="w-full md:w-8/12">
-                <form wire:submit.prevent="createQuote" class="space-y-6">
-                    @csrf
-                    <!-- Quote Info -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block mb-1">Quotation Number</label>
-                            <input type="text" wire:model.defer="quotation_no" readonly
-                                class="w-full border-b-2 py-2 px-1 bg-gray-50">
-                            @error('quotation_no')
-                                <span class="text-red-500 font-semibold ">{{ $message }}</span>
-                            @enderror
+        <div class="lg:col-span-2 p-6 md:p-8">
+            <form wire:submit.prevent="createQuote" class="space-y-6">
+                @csrf
+                <!-- Invoice Header Section -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <!-- Invoice Details Column -->
+                        <div class="md:w-1/2">
+                            <div class="bg-white border border-blue-100 rounded-xl p-6 shadow-sm space-y-6">
+                                <!-- Header -->
+                                <div class="border-b border-gray-300 pb-2">
+                                    <h2 class="text-xl font-bold text-gray-800 tracking-tight">Quotation Details</h2>
+                                </div>
+
+                                <!-- Form Grid -->
+                                <div class="space-y-5">
+                                    <!-- Invoice Number -->
+                                    <div class="flex items-center justify-between">
+                                        <label class="text-sm font-medium text-gray-700">Quotation #</label>
+                                        <input type="text" wire:model.defer="quotation_no" readonly
+                                            class="w-44 text-right px-3 py-2 border border-gray-300 rounded-md bg-gray-50 font-mono text-sm focus:outline-none">
+                                    </div>
+
+                                    <!-- Invoice Date -->
+                                    <div class="flex items-center justify-between">
+                                        <label class="text-sm font-medium text-gray-700">Quotation Date</label>
+                                        <input type="date" value="<?= date('Y-m-d') ?>"
+                                            class="w-44 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <label class="text-sm font-medium text-gray-700">Valid Date</label>
+                                        <input type="valid_date" value="{{ $validQuotationDate }}"
+                                            class="w-44 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                    </div>
+
+                                    <!-- Status Selector -->
+                                    <div class="flex items-center justify-between">
+                                        <label class="text-sm font-medium text-gray-700">Status</label>
+                                        <select wire:model="status"
+                                            class="w-44 px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                            <option value="draft">Draft</option>
+                                            <option value="sent">Sent</option>
+                                            <option value="accepted">Accepted</option>
+                                            <option value="rejected">Rejected</option>
+                                            <option value="cancelled">Cancelled</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block mb-1">Quotation Date</label>
-                            <input type="date" value="<?= date('Y-m-d')?>"
-                                class="w-full border-b-2 py-2 px-1 bg-gray-50">
-                        </div>
-                        <div>
-                            <label class="block mb-1">Valid Till</label>
-                            <input type="date" wire:model="valid_date" value="{{ $validQuotationDate }}"
-                                class="w-full border-b-2 py-2 px-1 bg-gray-50">
-                            @error('valid_date')
-                                <span class="text-red-500 font-semibold ">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div>
-                            <label class="block mb-1">Status</label>
-                            <select wire:model="status" class="w-full border-b-2 py-2 px-1 bg-gray-50">
-                                <option value="">Select Status</option>
-                                <option value="draft" selected>Draft</option>
-                                <option value="sent">Sent</option>
-                                <option value="accepted">Accepted</option>
-                                <option value="rejected">Rejected</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                            @error('status')
-                                <span class="text-red-500 font-semibold ">{{ $message }}</span>
-                            @enderror
+                        <!-- Business Info Column -->
+                        <div class="md:w-1/2">
+                            <div
+                                class="h-full flex flex-col justify-between bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-xl p-6 shadow-sm">
+                                <div class="flex  gap-5">
+                                    <!-- Logo Area -->
+                                    <div class="flex-shrink-0">
+                                        <div
+                                            class="w-20 h-20 bg-white rounded-xl border-2 border-blue-300 flex items-center justify-center shadow-md">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    <!-- Business Info -->
+                                    <div class="flex-1">
+                                        <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                                            TechBazar
+                                            <span
+                                                class="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Your
+                                                Business</span>
+                                        </h3>
+
+                                        <div class="mt-2 space-y-1">
+                                            <div class="flex items-start">
+                                                <svg class="flex-shrink-0 h-4 w-4 text-gray-500 mt-0.5" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                </svg>
+                                                <span class="ml-2 text-sm text-gray-600">123 Business Street, Purnea,
+                                                    Bihar 854301</span>
+                                            </div>
+
+                                            <div class="flex items-center">
+                                                <svg class="flex-shrink-0 h-4 w-4 text-gray-500" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                                </svg>
+                                                <span class="ml-2 text-sm text-gray-600">+91 8227046826</span>
+                                            </div>
+
+                                            <div class="flex items-center">
+                                                <svg class="flex-shrink-0 h-4 w-4 text-gray-500" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                </svg>
+                                                <span
+                                                    class="ml-2 text-sm text-gray-600">contact@techbazar.example</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-3 flex items-center">
+                                            <svg class="flex-shrink-0 h-4 w-4 text-gray-500" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                            </svg>
+                                            <span
+                                                class="ml-2 text-xs font-medium text-gray-700 bg-blue-50 px-2 py-1 rounded">GSTIN:
+                                                22ABCDE1234F1Z5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Customer -->
-                    <div class="flex flex-col md:flex-row gap-6">
-                        <div class="bg-blue-50 p-4 border rounded-lg space-y-4 w-full">
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-800">Customer Information</h3>
+                <!-- Customer Section -->
+                <div class="space-y-6">
+                    <!-- Customer Information Card -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                        <!-- Card Header -->
+                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-6 py-4 border-b border-blue-200">
+                            <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 mr-2"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path
+                                        d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                                </svg>
+                                Customer Information
+                            </h3>
+                        </div>
 
-                                <!-- Search Input with Clear Button -->
-                                <div class="relative">
-                                    <input type="text" wire:model.live.debounce.30ms="search"
-                                        placeholder="{{ $selectedCustomer ? 'Search again...' : 'Search Customer...' }}"
-                                        class="border rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
-                                        @if($selectedCustomer) wire:keydown.escape="clearSelection" @endif>
-                                        
-                                    <!-- Clear/X Button (when customer is selected) -->
+                        <!-- Card Body -->
+                        <div class="p-6 space-y-5">
+                            <!-- Search Section -->
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input type="text" wire:model.live.debounce.300ms="search"
+                                    placeholder="{{ $selectedCustomer ? 'Search different customer...' : 'Search by name or contact...' }}"
+                                    class="block w-full pl-10 pr-12 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                @error('selectedCustomer')
+                                    <p class="font-semibold text-red-500">{{ $message }}</p>
+                                @enderror
+
+                                <!-- Clear/Loading Indicators -->
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                                     @if($selectedCustomer)
                                         <button wire:click="clearSelection"
-                                            class="absolute right-3 top-3 text-gray-500 hover:text-red-500"
-                                            title="Clear selection">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                                fill="currentColor">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                                    clip-rule="evenodd" />
+                                            class="text-gray-400 hover:text-red-500 transition-colors">
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12" />
                                             </svg>
                                         </button>
-                                    @endif
-
-                                    <!-- Loading Spinner -->
-                                    @if($isSearching)
-                                        <div class="absolute right-3 top-3">
-                                            <svg class="animate-spin h-5 w-5 text-gray-500"
+                                    @else
+                                        <div wire:loading.delay.shortest wire:target="search">
+                                            <svg class="animate-spin h-5 w-5 text-blue-500"
                                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                                     stroke-width="4"></circle>
@@ -87,210 +191,273 @@
                                         </div>
                                     @endif
                                 </div>
+                            </div>
 
-                                <!-- Search Results Dropdown -->
-                                @if($search && count($customers) > 0)
-                                    <div class="mt-2 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                        @foreach($customers as $customer)
-                                            <div wire:click="selectCustomer({{ $customer->id }})"
-                                                class="p-3 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
-                                                <span>{{ $customer->name }}</span>
-                                                <span class="text-xs text-gray-500">{{ $customer->contact }}</span>
+                            <!-- Search Results -->
+                            @if($search && count($customers) > 0)
+                                <div
+                                    class="mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto divide-y divide-gray-100">
+                                    @foreach($customers as $customer)
+                                        <div wire:click="selectCustomer({{ $customer->id }})"
+                                            class="p-3 hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-colors duration-150">
+                                            <div class="flex items-center">
+                                                <div
+                                                    class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
+                                                    {{ substr($customer->name, 0, 1) }}
+                                                </div>
+                                                <div class="ml-3">
+                                                    <p class="text-sm font-medium text-gray-900">{{ $customer->name }}</p>
+                                                    <p class="text-xs text-gray-500">{{ $customer->contact }}</p>
+                                                </div>
                                             </div>
-                                        @endforeach
-                                    </div>
-                                @elseif($search && !$isSearching)
-                                    <div class="mt-2 p-3 text-gray-500 bg-white border rounded-lg">
-                                        No customers found
-                                    </div>
-                                @endif
+                                            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @elseif($search && count($customers) === 0)
+                                <div class="mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 text-center">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <h4 class="mt-2 text-sm font-medium text-gray-700">No customer found</h4>
+                                    <p class="mt-1 text-xs text-gray-500">We couldn't find any customer matching
+                                        "{{ $search }}"</p>
+                                </div>
+                            @endif
 
-                                <!-- Selected Customer Display -->
-                                @if($selectedCustomer)
-                                    <div class="mt-4 p-3 bg-teal-50 rounded-lg border border-teal-100">
-                                        <div class="flex justify-between items-start">
-                                            <div>
-                                                <p class="font-medium">Customer Details</p>
-                                                <input value="{{ $selectedCustomer->name }}" wire:model="customer_id">
-                                                </wire:modal>
-
-                                                <p class="text-sm text-gray-600">{{ $selectedCustomer->email }}</p>
-                                                <p class="text-sm text-gray-600">
-                                                    {{ $selectedCustomer->address->city ?? '—' }}
-                                                </p>
+                            <!-- Selected Customer -->
+                            @if($selectedCustomer)
+                                <div class="mt-4 bg-white rounded-lg border border-green-100 overflow-hidden shadow-sm">
+                                    <div class="bg-green-50 px-4 py-2 border-b border-green-100">
+                                        <h4 class="text-sm font-medium text-green-800 flex items-center">
+                                            <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            Selected Customer
+                                        </h4>
+                                    </div>
+                                    <div class="p-4">
+                                        <div class="flex items-start">
+                                            <div
+                                                class="flex-shrink-0 h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium text-lg">
+                                                {{ substr($selectedCustomer->name, 0, 1) }}
                                             </div>
-                                            <button wire:click="clearSelection"
-                                                class="text-gray-400 hover:text-red-500 transition" title="Change customer">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                                    fill="currentColor">
-                                                    <path fill-rule="evenodd"
-                                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                        clip-rule="evenodd" />
-                                                </svg>
-                                            </button>
+                                            <div class="ml-4">
+                                                <h4 class="text-base font-semibold text-gray-900">
+                                                    {{ $selectedCustomer->name }}
+                                                </h4>
+                                                <div class="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                                                    <div class="flex items-center">
+                                                        <svg class="flex-shrink-0 h-4 w-4 text-gray-400" fill="none"
+                                                            viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                        </svg>
+                                                        <span
+                                                            class="ml-2 text-gray-600">{{ $selectedCustomer->email }}</span>
+                                                    </div>
+                                                    <div class="flex items-center">
+                                                        <svg class="flex-shrink-0 h-4 w-4 text-gray-400" fill="none"
+                                                            viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                                        </svg>
+                                                        <span
+                                                            class="ml-2 text-gray-600">{{ $selectedCustomer->contact }}</span>
+                                                    </div>
+                                                    <div class="flex items-center">
+                                                        <svg class="flex-shrink-0 h-4 w-4 text-gray-400" fill="none"
+                                                            viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        </svg>
+                                                        <span
+                                                            class="ml-2 text-gray-600">{{ $selectedCustomer->address->city ?? 'Not specified' }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                @endif
-                            </div>
-                            <div class="flex items-center">
-                                <div class="flex-grow border-t"></div>
-                                <span class="mx-4 text-gray-500">OR</span>
-                                <div class="flex-grow border-t"></div>
-                            </div>
+                                </div>
+                            @endif
 
-                            <a href="{{ route('customer.create') }}"
-                                class="block w-full bg-blue-600 text-white py-2 rounded text-center hover:bg-blue-700">
-                                + Add New Customer
-                            </a>
+                            <!-- Add Customer CTA -->
+                            <div class="pt-2">
+                                <div class="relative">
+                                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                                        <div class="w-full border-t border-gray-300"></div>
+                                    </div>
+                                    <div class="relative flex justify-center">
+                                        <span class="px-2 bg-white text-sm text-gray-500">OR</span>
+                                    </div>
+                                </div>
+
+                                <a wire:navigate href="{{ route('customer.create') }}"
+                                    class="mt-4 w-full inline-flex justify-center items-center px-4 py-2.5  text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150">
+                                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    Add New Customer
+                                </a>
+                            </div>
                         </div>
                     </div>
-                    <!-- Product Items Section -->
-                    <div class="space-y-4">
-                        @foreach($items as $index => $item)
-                        <div wire:key="item-{{ $index }}" class="flex items-start gap-3 p-4 border rounded shadow">
-                            <!-- Action buttons -->
-                            <div class="flex flex-col items-center gap-2 pt-1 text-gray-400">
-                                <button type="button" wire:click.prevent="duplicateItem({{ $index }})"
-                                    class="hover:text-green-500">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                </div>
+
+                <!-- Products Section -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Products & Services</h3>
+
+                    @foreach($items as $index => $item)
+                        <div wire:key="item-{{ $index }}"
+                            class="border border-gray-300 rounded-xl p-4 bg-white shadow-sm relative">
+
+                            <!-- Up/Down/Delete Buttons -->
+                            <div class="absolute left-2 top-4 flex flex-col space-y-2">
+                                <button wire:click="moveItemUp({{ $index }})" class="text-blue-500 hover:text-blue-700">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 4v16m8-8H4" />
+                                            d="M5 15l7-7 7 7" />
                                     </svg>
                                 </button>
-
-                                <button wire:click.prevent="removeItem({{ $index }})" class="hover:text-red-500">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <button wire:click="moveItemDown({{ $index }})" class="text-blue-500 hover:text-blue-700">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <button wire:click="removeItem({{ $index }})" class="text-red-500 hover:text-red-700">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
                             </div>
 
-                            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <select wire:model="items.{{ $index }}.product_id"
-                                        wire:change="productSelected({{ $index }})"
-                                        class="w-full border rounded px-2 py-2 text-sm">
-                                        <option value="">Select Product</option>
-                                        @foreach($products as $product)
-                                            <option value="{{ $product->id }}">{{ $product->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('items.0.product_id')
-                                        <p class="text-red-500 text-xs">{{ $message }}</p>
-                                    @enderror
-                                    <textarea wire:model="items.{{ $index }}.description" placeholder="Description"
-                                        class="w-full h-20 border rounded px-2 py-1 mt-2 text-sm"></textarea>
+                            <!-- Product Form Layout -->
+                            <div class="md:grid md:grid-cols-2 md:gap-6 pl-10">
+                                <!-- Left Section -->
+                                <div class="space-y-1">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Item</label>
+                                        <select wire:model.live="items.{{ $index }}.product_id"
+                                            wire:change="productSelected({{ $index }})"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                            <option value="">Select Product</option>
+                                            @foreach ($products as $product)
+                                                <option value="{{ $product->id }}"
+                                                    @if(collect($items)->pluck('product_id')->contains($product->id) && $items[$index]['product_id'] != $product->id) disabled @endif>
+                                                    {{ $product->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('items.*.product_id')
+                                            <p class="text-red-500 font-semibold">{{ $message }}</p>
+                                        @enderror
+                                    </div>
 
-                                    <input type="number" wire:model="items.{{ $index }}.mrp" placeholder="MRP"
-                                        class="w-full border rounded px-2 py-1 text-sm" />
-                                        
-                                    @error('items.0.mrp')
-                                        <p class="text-red-500 text-xs">{{ $message }}</p>
-                                    @enderror
-                                    <div class="text-right text-sm font-medium text-gray-600">
-                                        Item Total: ₹{{ number_format($item['total'] ?? 0, 2) }}
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                        <textarea wire:model="items.{{ $index }}.description"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm h-20"
+                                            placeholder="Description..."></textarea>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">MRP</label>
+                                        <input type="number" wire:model="items.{{ $index }}.mrp"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                            placeholder="Enter MRP">
                                     </div>
                                 </div>
 
-                                <div class="grid grid-cols-2 gap-4">
-                                    <input type="number" wire:model.change="items.{{ $index }}.quantity"
-                                        placeholder="Qty" class="col-span-2 border rounded px-2 py-1 text-sm" />
-                                    @error('items.0.quantity')
-                                        <p class="text-red-500 text-xs">{{ $message }}</p>
-                                    @enderror
-                                    <select wire:model="items.{{ $index }}.unit"
-                                        class="col-span-2 border rounded px-2 py-1 text-sm">
-                                        <option value="piece">Piece</option>
-                                        <option value="box">Box</option>
-                                    </select>
-                                    @error('items.0.unit')
-                                        <p class="text-red-500 text-xs">{{ $message }}</p>
-                                    @enderror
+                                <!-- Right Section -->
+                                <div class="space-y-1 mt-4 md:mt-0">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                                        <input type="number" wire:model.lazy="items.{{ $index }}.quantity"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                            placeholder="Quantity">
+                                        @error('items.*.quantity')
+                                            <p class="text-red-500 font-semibold">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Item Discount
+                                            (%)</label>
+                                        <input type="text" wire:model="items.{{ $index }}.discount"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                            placeholder="%">
+                                    </div>
 
-                                    <input type="text" wire:model="items.{{ $index }}.discount" placeholder="Discount"
-                                        class="w-full border rounded px-2 py-1 text-sm" />
-                                    @error('items.0.discount')
-                                        <p class="text-red-500 text-xs">{{ $message }}</p>
-                                    @enderror
+
+                                    <!-- Calculated Totals -->
+                                    <div class="text-right pt-2">
+                                        <p class="text-xs text-gray-600">Discount:
+                                            ₹{{ number_format($item['discount_amount'] ?? 0, 2) }}</p>
+                                        <p class="text-sm font-medium text-gray-800">Total:
+                                            ₹{{ number_format($item['total'] ?? 0, 2) }}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        @endforeach
+                    @endforeach
 
-                        <button type="button" wire:click="addItem"
-                            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                            + Add Product
-                        </button>
-                    </div> 
-                    <!-- Notes -->
-                    <div>
-                        <label class="block mb-1">Notes</label>
-                        <textarea wire:model="notes" rows="4" class="w-full border rounded p-3 bg-gray-50"></textarea>
-                    </div>
+                    <button type="button" wire:click="addItem"
+                        class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 py-2 px-4 rounded-lg border border-blue-200 text-sm font-medium transition">
+                        + Add Product
+                    </button>
+                </div>
+                <!-- Notes -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                    <textarea wire:model="notes" rows="3"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+                <!-- Summary -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-5">📊 Summary</h3>
 
-                    <!-- Pricing Summary -->
-                    <div class="bg-gray-50 rounded-lg p-4 border">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Pricing Summary</h3>
-                        <div class="grid grid-rows-3 gap-4">
-                            <div>
-                                <label class="block mb-1">Subtotal</label>
-                                <input type="text" wire:model="subtotal" class="w-full border-b-2 py-1 px-1 bg-white"
-                                    value="₹{{ number_format($subtotal, 2) }}" readonly>
-                                      @error('subtotal')
-                                        <p class="text-red-500 text-xs">{{ $message }}</p>
-                                    @enderror
-                            </div>
-                            <div>
-                                <label class="block mb-1">Tax (18%)</label>
-                                <input type="text" wire:model="tax" class="w-full border-b-2 py-1 px-1 bg-white"
-                                    value="₹{{ number_format($tax, 2) }}" readonly>
-                                     @error('tax')
-                                        <p class="text-red-500 text-xs">{{ $message }}</p>
-                                    @enderror
-                            </div>
-                            <div>
-                                <label class="block mb-1">Total</label>
-                                <input type="text" wire:model="total"  class="w-full border-b-2 py-1 px-1 bg-blue-50 font-medium"
-                                    value="₹{{ number_format($total, 2) }}" readonly>
-                                     @error('total')
-                                        <p class="text-red-500 text-xs">{{ $message }}</p>
-                                    @enderror
-                            </div>
+                    <div class="space-y-4 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Subtotal</span>
+                            <span class="font-medium text-gray-700">₹{{ number_format($subtotal, 2) }}</span>
                         </div>
-                    </div>
-
-
-                    <!-- Submit -->
-                    <div>
-                        <button type="submit"
-                            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg shadow-md">
-                            Generate Quotation
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Right Column (Company Info) -->
-            <div class="w-full flex flex-col gap-5 md:w-4/12">
-                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-                    <div class="flex flex-col items-center mb-6">
-                        <div
-                            class="w-24 h-24 bg-gray-100 rounded-full mb-4 flex items-center justify-center border-2 border-dashed">
-                            <svg class="h-8 w-8 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Discount</span>
+                            <span class="font-medium text-green-600">₹{{ number_format($total_discount, 2) }}</span>
                         </div>
-                        <h3 class="text-xl font-semibold">TechBazar</h3>
-                        <p class="text-sm text-gray-600 mt-2">
-                            123 Business Street<br>
-                            Purnea, Bihar 854334<br>
-                            GSTIN: 22ABCDE1234F1Z5
-                        </p>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Tax <span class="text-xs text-gray-400">(18%)</span></span>
+                            <span class="font-medium text-orange-600">₹{{ number_format($tax, 2) }}</span>
+                        </div>
+
+                        <div class="flex justify-between border-t border-gray-100 pt-4 text-base">
+                            <span class="font-semibold text-gray-800">Total</span>
+                            <span class="font-bold text-blue-600 text-lg">₹{{ number_format($total, 2) }}</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+                <!-- Submit Button -->
+                <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg shadow-md transition-colors font-medium">
+                    Generate Invoice
+                </button>
+            </form>
         </div>
     </div>
 </div>
