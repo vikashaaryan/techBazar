@@ -13,7 +13,7 @@ use Livewire\Component;
 
 class CreateInvoice extends Component
 {
-    public $status = 'draft', $payment_status = '', $method = '', $notes, $due_date, $amount_paid;
+    public $status = 'draft', $payment_status = 'paid', $method = 'cash', $notes, $due_date, $amount_paid;
     public $datePrefix, $lastInvoice, $lastIncrement, $invoice_no, $newIncrement;
     public $subtotal = 0, $tax = 0, $taxRate = 0.18, $total = 0, $total_discount = 0;
     public $search = '', $selectedCustomer = null, $isSearching = false, $customers = [];
@@ -115,6 +115,27 @@ class CreateInvoice extends Component
 
         $this->calculateItemTotal($index);
         $this->calculateSummary();
+    }
+    public function moveItemUp($index)
+    {
+        if ($index > 0) {
+            $items = $this->items;
+            $temp = $items[$index - 1];
+            $items[$index - 1] = $items[$index];
+            $items[$index] = $temp;
+            $this->items = $items;
+        }
+    }
+
+    public function moveItemDown($index)
+    {
+        if ($index < count($this->items) - 1) {
+            $items = $this->items;
+            $temp = $items[$index + 1];
+            $items[$index + 1] = $items[$index];
+            $items[$index] = $temp;
+            $this->items = $items;
+        }
     }
 
 
@@ -248,7 +269,7 @@ class CreateInvoice extends Component
         ]);
 
 
-        $this->redirect('/hi', navigate: true); // Change route if needed
+        $this->redirect('/invoices'); 
     }
 
     public function render()
