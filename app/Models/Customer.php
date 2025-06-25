@@ -16,6 +16,10 @@ class Customer extends Model
     {
         return $this->hasMany(Sales::class); // or Invoice::class
     }
+    public function CustomerAddress()
+    {
+        return $this->belongsTo(Address::class);
+    }
 
 
 }

@@ -57,6 +57,7 @@ Route::get('/invoice/create', CreateInvoice::class)->name('createInvoice');
 Route::get('/invoices', ShowInvoice::class)->name('showInvoice');
 
 
+
 Route::get('/view-exchange', ViewExchange::class)->name('exchange.view');
 Route::get('/create-exchange', Exchange::class)->name('exchange.create');
 
@@ -67,4 +68,6 @@ Route::get('/invoices/{invoice}/edit', function (Invoice $invoice) {
 })->name('invoices.edit');
 //genrate pdf useing dom pdf
 
+Route::post('/invoices/{id}/send-email', [PdfController::class, 'SendEmail'])
+->name('invoices.send-email');
 Route::get('/generate-pdf/{id}', [PdfController::class, 'genratePdf'])->name('generate.pdf');
