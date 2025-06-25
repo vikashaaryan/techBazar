@@ -76,3 +76,5 @@ Route::get('/invoices/{invoice}/edit', function (Invoice $invoice) {
 Route::post('/invoices/{id}/send-email', [PdfController::class, 'SendEmail'])
 ->name('invoices.send-email');
 Route::get('/generate-pdf/{id}', [PdfController::class, 'genratePdf'])->name('generate.pdf');
+Route::get('/download-pdf/{id}', [PdfController::class, 'downloadPdf'])
+    ->name('downloadPdf');
