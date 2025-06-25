@@ -108,8 +108,8 @@
                                     {{ $invoice->invoice_no }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ $invoice->created_at->format('M j, Y') }} </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $invoice->due_date }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $invoice->customer_id }}
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $invoice->due_date?->format('d-m-Y') ?? 'N/A' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $invoice->customer->name }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{{ $invoice->total }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{{ $invoice->total }}</td>
