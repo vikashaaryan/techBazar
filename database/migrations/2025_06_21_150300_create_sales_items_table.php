@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained()->onDelete('CASCADE');
             $table->foreignId('invoice_id')->nullable();
             $table->string('discount');
+            $table->decimal('total', 10, 2); 
             $table->string('qty');
             $table->timestamps();;
         });

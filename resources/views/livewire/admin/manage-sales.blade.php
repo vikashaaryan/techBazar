@@ -52,7 +52,7 @@
                                 </td>
                                 <td class="px-4 py-2 border dark:border-gray-700">₹{{ number_format($sale->total_amount, 2) }}</td>
                                 <td class="flex justify-evenly px-4 py-2 border dark:border-gray-700">
-                                    <button wire:click="deleteSales({{ $sale->id }})"
+                                    <button wire:click="deleteSales({{ $sale->id }})" wire:confirm="Are you Sure want to delete this sales"
                                         class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-semibold transition duration-150">
                                         Delete
                                     </button>

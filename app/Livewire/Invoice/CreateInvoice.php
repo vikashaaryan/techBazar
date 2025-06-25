@@ -8,11 +8,12 @@ use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Sales;
 use App\Models\SalesItems;
+use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Livewire\Component;
 
 class CreateInvoice extends Component
 {
-    public $status = '', $payment_status = '', $method = '', $notes, $due_date, $amount_paid;
+    public $status = 'draft', $payment_status = '', $method = '', $notes, $due_date, $amount_paid;
     public $datePrefix, $lastInvoice, $lastIncrement, $invoice_no, $newIncrement;
     public $subtotal = 0, $tax = 0, $taxRate = 0.18, $total = 0, $total_discount = 0;
     public $search = '', $selectedCustomer = null, $isSearching = false, $customers = [];
@@ -181,12 +182,33 @@ class CreateInvoice extends Component
         $duplicate = $this->items[$index];
         array_splice($this->items, $index + 1, 0, [$duplicate]);
     }
+    protected function rules()
+    {
+        return [
+            'selectedCustomer' => 'required',
+            'due_date' => 'nullable|date',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.quantity' => 'required|numeric|min:1',
+            'items.*.mrp' => 'required|numeric|min:0',
+            'amount_paid' => 'required|numeric|min:0',
+            'method' => 'required_if:payment_status,paid',
+            'payment_status' => 'required',
+        ];
+    }
+    protected $messages = [
+        'selectedCustomer.required' => 'Please select a customer.',
+        'items.*.product_id.required' => 'Each item must have a selected product.',
+        'items.*.quantity.required' => 'Quantity is required.',
+    ];
+
 
     public function createInvoice()
     {
+        $this->validate();
         $invoice = Invoice::create([
             'invoice_no' => $this->invoice_no,
-            'customer_id' => $this->selectedCustomer['id'],
+            'customer_id' => $this->selectedCustomer?->id,
             'status' => $this->status,
             'due_date' => $this->due_date,
             'subtotal' => $this->subtotal,
@@ -197,7 +219,7 @@ class CreateInvoice extends Component
         ]);
 
         $sales = Sales::create([
-            'customer_id' => $this->selectedCustomer['id'],
+            'customer_id' => $this->selectedCustomer?->id,
             'invoice_id' => $invoice->id,
             'payment_status' => $this->payment_status,
             'discount' => $this->total_discount,
@@ -210,6 +232,7 @@ class CreateInvoice extends Component
                 'sale_id' => $sales->id,
                 'product_id' => $item['product_id'],
                 'discount' => $item['discount_amount'] ?? 0,
+                'total' => $item['total'] ?? 0,
                 'qty' => $item['quantity'],
                 'invoice_id' => $invoice->id,
             ]);
