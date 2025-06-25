@@ -46,8 +46,8 @@ class ManageStaff extends Component
 
         $address = Address::create([
             'address' => $this->address,
-            'addressable_type' => 'customer',
-            'purpose' => 'billing',
+            'addressable_type' => 'staff',
+            'purpose' => 'manage_shop',
             'city' => $this->city,
             'state' => $this->state,
             'country' => $this->country,

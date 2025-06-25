@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
             $table->text('address');
-            $table->enum('addressable_type',['customer', 'supplier']);
-            $table->enum('purpose',['billing', 'shipping']);
+            $table->enum('addressable_type',['customer', 'supplier','staff']);
+            $table->enum('purpose',['billing', 'shipping','manage_shop']);
             $table->string('city');
             $table->string('state');
             $table->string('country');
