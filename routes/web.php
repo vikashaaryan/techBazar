@@ -46,9 +46,12 @@ Route::get('/customers/{id}/info', [CustomerController::class, 'fetchInfo']);
 Route::resource('product', ProductController::class);
 
 // livewire admin
-Route::get('/admin', Dashboard::class)->name('admin.dashboard');
-Route::get('/admin/sales', ManageSales::class)->name('admin.sales');
-Route::get('/admin/staff', ManageStaff::class)->name('admin.staff');
+Route::group(['middleware' => ['auth', 'role:admin']], function (){
+    Route::get('/admin', Dashboard::class)->name('admin.dashboard');
+    Route::get('/admin/sales', ManageSales::class)->name('admin.sales');
+    Route::get('/admin/staff', ManageStaff::class)->name('admin.staff');
+});
+
 
 // quotation by livewire
 Route::get('/quotation/create', CreateQuotation::class)->name('createQuotation');
