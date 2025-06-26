@@ -47,4 +47,27 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function isManager(): bool
+    {
+        return $this->role === 'staff';
+    }
+    public function hasRole($role)
+    {
+        // For multiple role check (role1|role2)
+        if (str_contains($role, '|')) {
+            return in_array($this->role, explode('|', $role));
+        }
+
+        return $this->role === $role;
+    }
+    public function isAdmin()
+    {
+        return $this->role === 'admin'; // or your admin role check logic
+    }
+    public function isStaff()
+    {
+        return $this->role === 'staff'; // or your actual staff role check
+    }
+
+   
 }

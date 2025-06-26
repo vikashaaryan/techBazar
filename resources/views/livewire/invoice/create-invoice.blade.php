@@ -4,7 +4,6 @@
         <div class="text-center mb-8">
             <h1 class="text-3xl font-bold text-gray-900 underline">Invoice</h1>
         </div>
-
         <div class="lg:col-span-2 p-6 md:p-8">
             <form wire:submit.prevent="createInvoice" class="space-y-6">
                 @csrf
@@ -165,10 +164,11 @@
 
                                 <!-- Clear/Loading Indicators -->
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                                    @if($selectedCustomer)
+                                    @if ($selectedCustomer)
                                         <button wire:click="clearSelection"
                                             class="text-gray-400 hover:text-red-500 transition-colors">
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M6 18L18 6M6 6l12 12" />
                                             </svg>
@@ -176,9 +176,10 @@
                                     @else
                                         <div wire:loading.delay.shortest wire:target="search">
                                             <svg class="animate-spin h-5 w-5 text-blue-500"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                                    stroke-width="4"></circle>
+                                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                    stroke="currentColor" stroke-width="4"></circle>
                                                 <path class="opacity-75" fill="currentColor"
                                                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                                 </path>
@@ -189,10 +190,10 @@
                             </div>
 
                             <!-- Search Results -->
-                            @if($search && count($customers) > 0)
+                            @if ($search && count($customers) > 0)
                                 <div
                                     class="mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto divide-y divide-gray-100">
-                                    @foreach($customers as $customer)
+                                    @foreach ($customers as $customer)
                                         <div wire:click="selectCustomer({{ $customer->id }})"
                                             class="p-3 hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-colors duration-150">
                                             <div class="flex items-center">
@@ -201,7 +202,8 @@
                                                     {{ substr($customer->name, 0, 1) }}
                                                 </div>
                                                 <div class="ml-3">
-                                                    <p class="text-sm font-medium text-gray-900">{{ $customer->name }}</p>
+                                                    <p class="text-sm font-medium text-gray-900">{{ $customer->name }}
+                                                    </p>
                                                     <p class="text-xs text-gray-500">{{ $customer->contact }}</p>
                                                 </div>
                                             </div>
@@ -227,11 +229,13 @@
                             @endif
 
                             <!-- Selected Customer -->
-                            @if($selectedCustomer)
-                                <div class="mt-4 bg-white rounded-lg border border-green-100 overflow-hidden shadow-sm">
+                            @if ($selectedCustomer)
+                                <div
+                                    class="mt-4 bg-white rounded-lg border border-green-100 overflow-hidden shadow-sm">
                                     <div class="bg-green-50 px-4 py-2 border-b border-green-100">
                                         <h4 class="text-sm font-medium text-green-800 flex items-center">
-                                            <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M5 13l4 4L19 7" />
                                             </svg>
@@ -250,8 +254,8 @@
                                                 </h4>
                                                 <div class="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
                                                     <div class="flex items-center">
-                                                        <svg class="flex-shrink-0 h-4 w-4 text-gray-400" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor">
+                                                        <svg class="flex-shrink-0 h-4 w-4 text-gray-400"
+                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2"
                                                                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -260,8 +264,8 @@
                                                             class="ml-2 text-gray-600">{{ $selectedCustomer->email }}</span>
                                                     </div>
                                                     <div class="flex items-center">
-                                                        <svg class="flex-shrink-0 h-4 w-4 text-gray-400" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor">
+                                                        <svg class="flex-shrink-0 h-4 w-4 text-gray-400"
+                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2"
                                                                 d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -270,13 +274,14 @@
                                                             class="ml-2 text-gray-600">{{ $selectedCustomer->contact }}</span>
                                                     </div>
                                                     <div class="flex items-center">
-                                                        <svg class="flex-shrink-0 h-4 w-4 text-gray-400" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor">
+                                                        <svg class="flex-shrink-0 h-4 w-4 text-gray-400"
+                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2"
                                                                 d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                                             <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                stroke-width="2"
+                                                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                         </svg>
                                                         <span
                                                             class="ml-2 text-gray-600">{{ $selectedCustomer->address->city ?? 'Not specified' }}</span>
@@ -317,25 +322,28 @@
                 <div class="space-y-4">
                     <h3 class="text-lg font-semibold text-gray-800">Products & Services</h3>
 
-                    @foreach($items as $index => $item)
+                    @foreach ($items as $index => $item)
                         <div wire:key="item-{{ $index }}"
                             class="border border-gray-300 rounded-xl p-4 bg-white shadow-sm relative">
 
                             <!-- Up/Down/Delete Buttons -->
                             <div class="absolute left-2 top-4 flex flex-col space-y-2">
-                                <button wire:click="moveItemUp({{ $index }})" class="text-blue-500 hover:text-blue-700">
+                                <button wire:click="moveItemUp({{ $index }})"
+                                    class="text-blue-500 hover:text-blue-700">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M5 15l7-7 7 7" />
                                     </svg>
                                 </button>
-                                <button wire:click="moveItemDown({{ $index }})" class="text-blue-500 hover:text-blue-700">
+                                <button wire:click="moveItemDown({{ $index }})"
+                                    class="text-blue-500 hover:text-blue-700">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
-                                <button wire:click="removeItem({{ $index }})" class="text-red-500 hover:text-red-700">
+                                <button wire:click="removeItem({{ $index }})"
+                                    class="text-red-500 hover:text-red-700">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M6 18L18 6M6 6l12 12" />
@@ -355,7 +363,7 @@
                                             <option value="">Select Product</option>
                                             @foreach ($products as $product)
                                                 <option value="{{ $product->id }}"
-                                                    @if(collect($items)->pluck('product_id')->contains($product->id) && $items[$index]['product_id'] != $product->id) disabled @endif>
+                                                    @if (collect($items)->pluck('product_id')->contains($product->id) && $items[$index]['product_id'] != $product->id) disabled @endif>
                                                     {{ $product->name }}
                                                 </option>
                                             @endforeach
@@ -496,22 +504,153 @@
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
-                            <input type="number" wire:model.live="amount_paid" placeholder="₹0.00"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="number" 
+                                   wire:model.live="amount_paid" 
+                                   wire:key="amount_paid"
+                                   placeholder="₹0.00"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                             @error('amount_paid')
                                 <p class="text-red-500 font-semibold">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
                 </div>
+                <form id="payment-form">
+                    @csrf
+                    <input type="hidden" name="invoice_id" value="{{ $invoice->id }}">
 
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount (₹)</label>
+                        <input type="number" 
+                               class="form-control" 
+                               id="amount" 
+                               name="amount"
+                               min="1"
+                               max="{{ $invoice->total - $invoice->amount_paid }}"
+                               value="{{ $invoice->total - $invoice->amount_paid }}"
+                               wire:model.live="amount_paid">
+                        <div class="form-text">Maximum payable: ₹{{ number_format($invoice->total - $invoice->amount_paid, 2) }}</div>
+                    </div>
 
-                <!-- Submit Button -->
-                <button type="submit"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg shadow-md transition-colors font-medium">
-                    Generate Invoice
-                </button>
+                    <div class="payment-options mt-4" wire:key="payment-button-{{ $amount_paid }}">
+                        <button id="rzp-button" type="submit" class="btn btn-primary btn-lg">
+                            Pay ₹{{ number_format($amount_paid ?? 0, 2) }} Now
+                        </button>
+                    </div>
+                </form>
+               
             </form>
         </div>
     </div>
 </div>
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.addEventListener('livewire:load', function() {
+        window.addEventListener('initiate-razorpay', event => {
+            const options = {
+                "key": "{{ config('services.razorpay.key') }}",
+                "amount": event.detail.amount * 100, // Amount is in paise
+                "currency": "INR",
+                "name": "{{ config('app.name') }}",
+                "description": "Payment for Invoice #" + event.detail.invoice_id,
+                "order_id": null, // Will be set after order creation
+                "prefill": {
+                    "name": event.detail.customer_name,
+                    "email": event.detail.customer_email,
+                    "contact": event.detail.customer_contact
+                },
+                "theme": {
+                    "color": "#4f46e5"
+                },
+                "handler": function(response) {
+                    handlePaymentSuccess(response, event.detail.invoice_id, event.detail.amount);
+                },
+                "modal": {
+                    "ondismiss": function() {
+                        Livewire.emit('paymentCancelled');
+                    }
+                }
+            };
+
+            // Create Razorpay order
+            fetch('/create-razorpay-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    amount: event.detail.amount,
+                    invoice_id: event.detail.invoice_id
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.error) {
+                    throw new Error(data.error);
+                }
+                options.order_id = data.id;
+                const rzp = new Razorpay(options);
+                rzp.open();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error creating payment order: ' + error.message);
+                Livewire.emit('paymentFailed', error.message);
+            });
+        });
+
+        async function handlePaymentSuccess(response, invoiceId, amount) {
+            try {
+                const verification = await fetch('/razorpay-payment-success', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_signature: response.razorpay_signature,
+                        invoice_id: invoiceId,
+                        amount: amount
+                    })
+                });
+
+                const data = await verification.json();
+                
+                if (data.success) {
+                    // Generate invoice and redirect
+                    const invoiceResponse = await fetch('/generate-invoice', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            payment_id: response.razorpay_payment_id,
+                            invoice_id: invoiceId,
+                            amount: amount
+                        })
+                    });
+                    
+                    const invoiceData = await invoiceResponse.json();
+                    
+                    if (invoiceData.success) {
+                        window.location.href = data.redirect || '/invoice/' + invoiceId;
+                    } else {
+                        throw new Error(invoiceData.error || 'Invoice generation failed');
+                    }
+                } else {
+                    throw new Error(data.error || 'Payment verification failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert(error.message);
+                Livewire.emit('paymentProcessError', error.message);
+            }
+        }
+    });
+</script>

@@ -40,7 +40,7 @@ class HomeController extends Controller
         ToastMagic::success('Usre Register successfully!');
 
 
-        return redirect()->route('home')->with('success', 'User registered successfully!');
+        return redirect()->route('login')->with('success', 'User registered successfully!');
     }
 
     public function Userlogin(Request $request)
@@ -70,6 +70,6 @@ class HomeController extends Controller
     public function Userlogout()
     {
         Auth::logout();
-        return redirect()->route('home')->with('success', 'Logged out successfully!');
+        return redirect()->route('login')->with('success', 'Logged out successfully!');
     }
 }

@@ -168,7 +168,7 @@ TechBazar | Register Page
                     <!-- Login Link -->
                     <div class="text-center text-sm text-gray-600">
                         Already have an account? 
-                        <a href="{{ route('home') }}" class="font-medium text-blue-600 hover:underline">Sign in</a>
+                        <a href="{{ route('login') }}" class="font-medium text-blue-600 hover:underline">Sign in</a>
                     </div>
                 </form>
             </div>
