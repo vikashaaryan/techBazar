@@ -251,7 +251,7 @@
                 <i class="fas fa-chevron-down text-xs sidebar-text dropdown-icon transition-transform"></i>
             </div>
             <div class="mt-2 ml-8 pl-2 border-l border-gray-700/50 space-y-1 dropdown-content hidden">
-                <x-sidebar-link href="{{route('admin.staff')}}" icon="fas fa-circle" active="admin.staff">
+                <x-sidebar-link wire:navigate href="{{route('admin.staff')}}" icon="fas fa-circle" active="admin.staff">
                     Add New Staff
                 </x-sidebar-link>
             </div>

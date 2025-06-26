@@ -26,6 +26,11 @@ class Invoice extends Model
     {
         return $this->hasMany(Sales::class);
     }
+    
+    public function quotation()
+{
+    return $this->belongsTo(Quote::class, 'quotation_id');
+}
     public function sales(): HasMany
     {
         return $this->hasMany(Sales::class);

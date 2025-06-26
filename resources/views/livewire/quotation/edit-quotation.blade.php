@@ -2,11 +2,11 @@
     <div class="max-w-6xl mx-auto">
         <!-- Header -->
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 underline">Quotation</h1>
+            <h1 class="text-3xl font-bold text-gray-900 underline">Edit Quotation ({{ $quotation->id }})</h1>
         </div>
 
         <div class="lg:col-span-2 p-6 md:p-8">
-            <form wire:submit.prevent="createQuote" class="space-y-6">
+            <form wire:submit.prevent="saveQuotation" class="space-y-6">
                 @csrf
                 <!-- Invoice Header Section -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
@@ -24,19 +24,20 @@
                                     <!-- Invoice Number -->
                                     <div class="flex items-center justify-between">
                                         <label class="text-sm font-medium text-gray-700">Quotation #</label>
-                                        <input type="text" wire:model.defer="quotation_no" readonly
+                                        <input type="text" value="{{ $quotation->quotation_no }}" readonly
                                             class="w-44 text-right px-3 py-2 border border-gray-300 rounded-md bg-gray-50 font-mono text-sm focus:outline-none">
                                     </div>
 
                                     <!-- Invoice Date -->
                                     <div class="flex items-center justify-between">
                                         <label class="text-sm font-medium text-gray-700">Quotation Date</label>
-                                        <input type="date" value="<?= date('Y-m-d') ?>"
+                                        <input type="date" readonly
+                                            value="{{ $quotation->created_at->format('Y-m-d') }}"
                                             class="w-44 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <label class="text-sm font-medium text-gray-700">Valid Date</label>
-                                        <input type="valid_date" value="{{ $validQuotationDate }}"
+                                        <input type="date" wire:model="valid_date" value="{{ $quotation->valid_date }}"
                                             class="w-44 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
                                     </div>
 
@@ -151,168 +152,38 @@
                         </div>
 
                         <!-- Card Body -->
-                        <div class="p-6 space-y-5">
-                            <!-- Search Section -->
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </div>
-                                <input type="text" wire:model.live.debounce.300ms="search"
-                                    placeholder="{{ $selectedCustomer ? 'Search different customer...' : 'Search by name or contact...' }}"
-                                    class="block w-full pl-10 pr-12 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
-                                @error('selectedCustomer')
-                                    <p class="font-semibold text-red-500">{{ $message }}</p>
-                                @enderror
-
-                                <!-- Clear/Loading Indicators -->
-                                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                                    @if($selectedCustomer)
-                                        <button wire:click="clearSelection"
-                                            class="text-gray-400 hover:text-red-500 transition-colors">
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
-                                    @else
-                                        <div wire:loading.delay.shortest wire:target="search">
-                                            <svg class="animate-spin h-5 w-5 text-blue-500"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                                    stroke-width="4"></circle>
-                                                <path class="opacity-75" fill="currentColor"
-                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                                </path>
-                                            </svg>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <!-- Search Results -->
-                            @if($search && count($customers) > 0)
-                                <div
-                                    class="mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto divide-y divide-gray-100">
-                                    @foreach($customers as $customer)
-                                        <div wire:click="selectCustomer({{ $customer->id }})"
-                                            class="p-3 hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-colors duration-150">
-                                            <div class="flex items-center">
-                                                <div
-                                                    class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
-                                                    {{ substr($customer->name, 0, 1) }}
-                                                </div>
-                                                <div class="ml-3">
-                                                    <p class="text-sm font-medium text-gray-900">{{ $customer->name }}</p>
-                                                    <p class="text-xs text-gray-500">{{ $customer->contact }}</p>
-                                                </div>
-                                            </div>
-                                            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
-                                                stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M9 5l7 7-7 7" />
-                                            </svg>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @elseif($search && count($customers) === 0)
-                                <div class="mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 text-center">
-                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <h4 class="mt-2 text-sm font-medium text-gray-700">No customer found</h4>
-                                    <p class="mt-1 text-xs text-gray-500">We couldn't find any customer matching
-                                        "{{ $search }}"</p>
-                                </div>
-                            @endif
-
-                            <!-- Selected Customer -->
-                            @if($selectedCustomer)
-                                <div class="mt-4 bg-white rounded-lg border border-green-100 overflow-hidden shadow-sm">
-                                    <div class="bg-green-50 px-4 py-2 border-b border-green-100">
-                                        <h4 class="text-sm font-medium text-green-800 flex items-center">
-                                            <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M5 13l4 4L19 7" />
-                                            </svg>
-                                            Selected Customer
-                                        </h4>
+                        <div
+                            class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Column 1 -->
+                                <div class="space-y-3">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Name</p>
+                                        <p class="text-gray-800 dark:text-gray-100 font-medium">
+                                            {{ $quotation->customer->name }}</p>
                                     </div>
-                                    <div class="p-4">
-                                        <div class="flex items-start">
-                                            <div
-                                                class="flex-shrink-0 h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium text-lg">
-                                                {{ substr($selectedCustomer->name, 0, 1) }}
-                                            </div>
-                                            <div class="ml-4">
-                                                <h4 class="text-base font-semibold text-gray-900">
-                                                    {{ $selectedCustomer->name }}
-                                                </h4>
-                                                <div class="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                                                    <div class="flex items-center">
-                                                        <svg class="flex-shrink-0 h-4 w-4 text-gray-400" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                                        </svg>
-                                                        <span
-                                                            class="ml-2 text-gray-600">{{ $selectedCustomer->email }}</span>
-                                                    </div>
-                                                    <div class="flex items-center">
-                                                        <svg class="flex-shrink-0 h-4 w-4 text-gray-400" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                                        </svg>
-                                                        <span
-                                                            class="ml-2 text-gray-600">{{ $selectedCustomer->contact }}</span>
-                                                    </div>
-                                                    <div class="flex items-center">
-                                                        <svg class="flex-shrink-0 h-4 w-4 text-gray-400" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                        </svg>
-                                                        <span
-                                                            class="ml-2 text-gray-600">{{ $selectedCustomer->address->city ?? 'Not specified' }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
 
-                            <!-- Add Customer CTA -->
-                            <div class="pt-2">
-                                <div class="relative">
-                                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                                        <div class="w-full border-t border-gray-300"></div>
-                                    </div>
-                                    <div class="relative flex justify-center">
-                                        <span class="px-2 bg-white text-sm text-gray-500">OR</span>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Contact</p>
+                                        <p class="text-gray-800 dark:text-gray-100 font-medium">
+                                            {{ $quotation->customer->contact }}</p>
                                     </div>
                                 </div>
 
-                                <a wire:navigate href="{{ route('customer.create') }}"
-                                    class="mt-4 w-full inline-flex justify-center items-center px-4 py-2.5  text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150">
-                                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                    </svg>
-                                    Add New Customer
-                                </a>
+                                <!-- Column 2 -->
+                                <div class="space-y-3">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Email</p>
+                                        <p class="text-gray-800 dark:text-gray-100 font-medium">
+                                            {{ $quotation->customer->email }}</p>
+                                    </div>
+
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Address</p>
+                                        <p class="text-gray-800 dark:text-gray-100 font-medium">
+                                            {{ $quotation->customer->address->address }}</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -328,19 +199,19 @@
 
                             <!-- Up/Down/Delete Buttons -->
                             <div class="absolute left-2 top-4 flex flex-col space-y-2">
-                                <button wire:click="moveItemUp({{ $index }})" class="text-blue-500 hover:text-blue-700">
+                                <button type="button" wire:click="moveItemUp({{ $index }})" class="text-blue-500 hover:text-blue-700">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M5 15l7-7 7 7" />
                                     </svg>
                                 </button>
-                                <button wire:click="moveItemDown({{ $index }})" class="text-blue-500 hover:text-blue-700">
+                                <button type="button" wire:click="moveItemDown({{ $index }})" class="text-blue-500 hover:text-blue-700">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
-                                <button wire:click="removeItem({{ $index }})" class="text-red-500 hover:text-red-700">
+                                <button type="button" wire:click="removeItem({{ $index }})" class="text-red-500 hover:text-red-700">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M6 18L18 6M6 6l12 12" />
@@ -365,7 +236,7 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error('items.*.product_id')
+                                        @error('items.'.$index.'.product_id')
                                             <p class="text-red-500 font-semibold">{{ $message }}</p>
                                         @enderror
                                     </div>
@@ -392,14 +263,14 @@
                                         <input type="number" wire:model.lazy="items.{{ $index }}.quantity"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
                                             placeholder="Quantity">
-                                        @error('items.*.quantity')
+                                        @error('items.'.$index.'.quantity')
                                             <p class="text-red-500 font-semibold">{{ $message }}</p>
                                         @enderror
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Item Discount
                                             (%)</label>
-                                        <input type="text" wire:model="items.{{ $index }}.discount"
+                                        <input type="text" wire:model="items.{{ $index }}.discount_percent"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
                                             placeholder="%">
                                     </div>
@@ -435,27 +306,27 @@
                     <div class="space-y-4 text-sm">
                         <div class="flex justify-between">
                             <span class="text-gray-500">Subtotal</span>
-                            <span class="font-medium text-gray-700">₹{{ number_format($subtotal, 2) }}</span>
+                            <span wire:model="subtotal" class="font-medium text-gray-700">₹{{ number_format($subtotal, 2) }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-500">Discount</span>
-                            <span class="font-medium text-green-600">₹{{ number_format($total_discount, 2) }}</span>
+                            <span wire:model="total_discount" class="font-medium text-green-600">₹{{ number_format($total_discount, 2) }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-500">Tax <span class="text-xs text-gray-400">(18%)</span></span>
-                            <span class="font-medium text-orange-600">₹{{ number_format($tax, 2) }}</span>
+                            <span wire:model="tax" class="font-medium text-orange-600">₹{{ number_format($tax, 2) }}</span>
                         </div>
 
                         <div class="flex justify-between border-t border-gray-100 pt-4 text-base">
                             <span class="font-semibold text-gray-800">Total</span>
-                            <span class="font-bold text-blue-600 text-lg">₹{{ number_format($total, 2) }}</span>
+                            <span wire:model="total" class="font-bold text-blue-600 text-lg">₹{{ number_format($total, 2) }}</span>
                         </div>
                     </div>
                 </div>
                 <!-- Submit Button -->
                 <button type="submit"
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg shadow-md transition-colors font-medium">
-                    Generate Quotation
+                    Update Quotation
                 </button>
             </form>
         </div>
