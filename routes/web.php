@@ -65,13 +65,7 @@ Route::group(['middleware' => ['auth', 'role:staff|admin']], function () {
     Route::get('/generate-pdf/{id}', [PdfController::class, 'genratePdf'])->name('generate.pdf');
     Route::get('/download-pdf/{id}', [PdfController::class, 'downloadPdf'])
         ->name('downloadPdf');
-    // Payment Routes
-    // Dummy Payment Routes
-    Route::post('/create-razorpay-order', [\App\Http\Controllers\PaymentController::class, 'createOrder'])
-        ->name('razorpay.create-order');
-
-    Route::post('/razorpay-payment-success', [\App\Http\Controllers\PaymentController::class, 'handleSuccess'])
-        ->name('razorpay.payment-success');
+  
 });
 
 // Admin Routes (admin-only access)

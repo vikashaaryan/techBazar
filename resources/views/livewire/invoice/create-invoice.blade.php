@@ -515,29 +515,14 @@
                         </div>
                     </div>
                 </div>
-                <form id="payment-form">
-                    @csrf
-                    <input type="hidden" name="invoice_id" value="{{ $invoice->id }}">
+               
 
-                    <div class="mb-3">
-                        <label for="amount" class="form-label">Amount (₹)</label>
-                        <input type="number" 
-                               class="form-control" 
-                               id="amount" 
-                               name="amount"
-                               min="1"
-                               max="{{ $invoice->total - $invoice->amount_paid }}"
-                               value="{{ $invoice->total - $invoice->amount_paid }}"
-                               wire:model.live="amount_paid">
-                        <div class="form-text">Maximum payable: ₹{{ number_format($invoice->total - $invoice->amount_paid, 2) }}</div>
-                    </div>
-
-                    <div class="payment-options mt-4" wire:key="payment-button-{{ $amount_paid }}">
-                        <button id="rzp-button" type="submit" class="btn btn-primary btn-lg">
-                            Pay ₹{{ number_format($amount_paid ?? 0, 2) }} Now
+                    <div class="payment-options mt-4">
+                        <button id="rzp-button" type="submit" class="w-full text-white font-semibold bg-green-600 p-2 rounded text-xl">
+                          Invoice Genrate
                         </button>
                     </div>
-                </form>
+               
                
             </form>
         </div>
@@ -545,112 +530,3 @@
 </div>
 
 
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script>
-    document.addEventListener('livewire:load', function() {
-        window.addEventListener('initiate-razorpay', event => {
-            const options = {
-                "key": "{{ config('services.razorpay.key') }}",
-                "amount": event.detail.amount * 100, // Amount is in paise
-                "currency": "INR",
-                "name": "{{ config('app.name') }}",
-                "description": "Payment for Invoice #" + event.detail.invoice_id,
-                "order_id": null, // Will be set after order creation
-                "prefill": {
-                    "name": event.detail.customer_name,
-                    "email": event.detail.customer_email,
-                    "contact": event.detail.customer_contact
-                },
-                "theme": {
-                    "color": "#4f46e5"
-                },
-                "handler": function(response) {
-                    handlePaymentSuccess(response, event.detail.invoice_id, event.detail.amount);
-                },
-                "modal": {
-                    "ondismiss": function() {
-                        Livewire.emit('paymentCancelled');
-                    }
-                }
-            };
-
-            // Create Razorpay order
-            fetch('/create-razorpay-order', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    amount: event.detail.amount,
-                    invoice_id: event.detail.invoice_id
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(data.error) {
-                    throw new Error(data.error);
-                }
-                options.order_id = data.id;
-                const rzp = new Razorpay(options);
-                rzp.open();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error creating payment order: ' + error.message);
-                Livewire.emit('paymentFailed', error.message);
-            });
-        });
-
-        async function handlePaymentSuccess(response, invoiceId, amount) {
-            try {
-                const verification = await fetch('/razorpay-payment-success', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        razorpay_order_id: response.razorpay_order_id,
-                        razorpay_payment_id: response.razorpay_payment_id,
-                        razorpay_signature: response.razorpay_signature,
-                        invoice_id: invoiceId,
-                        amount: amount
-                    })
-                });
-
-                const data = await verification.json();
-                
-                if (data.success) {
-                    // Generate invoice and redirect
-                    const invoiceResponse = await fetch('/generate-invoice', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({
-                            payment_id: response.razorpay_payment_id,
-                            invoice_id: invoiceId,
-                            amount: amount
-                        })
-                    });
-                    
-                    const invoiceData = await invoiceResponse.json();
-                    
-                    if (invoiceData.success) {
-                        window.location.href = data.redirect || '/invoice/' + invoiceId;
-                    } else {
-                        throw new Error(invoiceData.error || 'Invoice generation failed');
-                    }
-                } else {
-                    throw new Error(data.error || 'Payment verification failed');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert(error.message);
-                Livewire.emit('paymentProcessError', error.message);
-            }
-        }
-    });
-</script>
