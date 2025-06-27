@@ -504,29 +504,62 @@
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
-                            <input type="number" 
-                                   wire:model.live="amount_paid" 
-                                   wire:key="amount_paid"
-                                   placeholder="₹0.00"
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="number" wire:model.live="amount_paid" wire:key="amount_paid"
+                                placeholder="₹0.00"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                             @error('amount_paid')
                                 <p class="text-red-500 font-semibold">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
                 </div>
-               
 
-                    <div class="payment-options mt-4">
-                        <button id="rzp-button" type="submit" class="w-full text-white font-semibold bg-green-600 p-2 rounded text-xl">
-                          Invoice Genrate
-                        </button>
-                    </div>
-               
-               
+
+                <button id="rzp-button" type="button"
+                    class="w-full text-white font-semibold bg-green-600 p-2 rounded text-xl">
+                    Pay & Generate Invoice
+                </button>
+                <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+                <script>
+                    document.getElementById('rzp-button').addEventListener('click', function(e) {
+                        e.preventDefault();
+
+                        let amount = @this.amount_paid;
+                        if (!amount || amount <= 0) {
+                            alert('Please enter a valid amount');
+                            return;
+                        }
+
+                        var options = {
+                            "key": "{{ env('RAZORPAY_KEY') }}",
+                            "amount": amount * 100,
+                            "currency": "INR",
+                            "name": "Invoice Payment",
+                            "description": "Sales Invoice",
+                            "handler": function(response) {
+                                @this.call('processPaymentAndCreateInvoice',
+                                    response.razorpay_payment_id,
+                                    response.razorpay_order_id,
+                                    response.razorpay_signature
+                                );
+                            },
+                            "prefill": {
+                                "name": "{{ Auth::user()->name ?? 'Guest' }}",
+                                "email": "{{ Auth::user()->email ?? 'email@example.com' }}"
+                            },
+                            "theme": {
+                                "color": "#28a745"
+                            }
+                        };
+
+                        var rzp1 = new Razorpay(options);
+                        rzp1.open();
+                    });
+                </script>
+
+
+
             </form>
         </div>
     </div>
 </div>
-
-
