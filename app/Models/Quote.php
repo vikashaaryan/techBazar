@@ -28,6 +28,10 @@ class Quote extends Model
 
         return $datePrefix . '-' . $newIncrement;
     }
+    public function customer()
+    {
+        return $this->hasOne(Customer::class, 'id', 'customer_id');
+    }
 
 
 }

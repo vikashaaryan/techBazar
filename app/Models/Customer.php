@@ -21,5 +21,10 @@ class Customer extends Model
         return $this->belongsTo(Address::class);
     }
 
+    public function quotations()
+    {
+        return $this->hasMany(Quote::class);
+    }
+
 
 }

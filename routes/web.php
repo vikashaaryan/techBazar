@@ -22,6 +22,7 @@ use App\Livewire\Invoice\CreateInvoice;
 use App\Livewire\Invoice\EditInvoice;
 use App\Livewire\Invoice\ShowInvoice;
 use App\Livewire\Quotation;
+use App\Livewire\Quotation\EditQuotation;
 use App\Livewire\Quote;
 use App\Livewire\ShowQuotation;
 use App\Models\Invoice;
@@ -47,6 +48,7 @@ Route::group(['middleware' => ['auth', 'role:staff|admin']], function () {
     // Quotation routes (Livewire)
     Route::get('/quotation/create', CreateQuotation::class)->name('createQuotation');
     Route::get('/quotations', ShowQuotation::class)->name('showQuotation');
+    Route::get('/quotations/edit/{quotation}', EditQuotation::class)->name('editQuotation');
 
     // Invoice routes (Livewire)
     Route::get('/invoice/create', CreateInvoice::class)->name('createInvoice');

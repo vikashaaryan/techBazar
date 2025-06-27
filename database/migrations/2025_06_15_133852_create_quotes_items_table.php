@@ -19,7 +19,9 @@ return new class extends Migration {
             $table->unsignedInteger('quantity');
             $table->string('unit');
             $table->decimal('mrp', 10, 2);       // Use 'mrp' instead of 'price' to match your form
-            $table->decimal('discount', 10, 2)->default(0);
+            $table->decimal('discount_percent', 10, 2)->default(0);
+            $table->decimal('discount_amount', 10, 2)->default(0);
+            $table->decimal('total', 10, 2);
             $table->decimal('tax', 5, 2)->default(0);
             $table->timestamps();
         });

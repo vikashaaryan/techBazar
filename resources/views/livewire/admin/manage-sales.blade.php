@@ -41,18 +41,20 @@
                                 <td class="px-4 py-2 border dark:border-gray-700">{{ $sale->customer->name }}</td>
                                 <td class="px-4 py-2 border dark:border-gray-700">{{ $sale->invoice->invoice_no }}</td>
                                 <td class="px-4 py-2 border dark:border-gray-700">
-                                    <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full 
-                                                                                                                    {{ 
-                                                                                                                        $sale->payment_status == 'paid' ? 'bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-200' :
+                                    <span
+                                        class="inline-block px-2 py-1 text-xs font-semibold rounded-full 
+                                                                                                                                {{ 
+                                                                                                                                    $sale->payment_status == 'paid' ? 'bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-200' :
                     ($sale->payment_status == 'partial' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-800 dark:text-yellow-200' :
                         'bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200') 
-                                                                                                                    }}">
+                                                                                                                                }}">
                                         {{ ucfirst($sale->payment_status) }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-2 border dark:border-gray-700">₹{{ number_format($sale->total_amount, 2) }}</td>
                                 <td class="flex justify-evenly px-4 py-2 border dark:border-gray-700">
-                                    <button wire:click="deleteSales({{ $sale->id }})" wire:confirm="Are you Sure want to delete this sales"
+                                    <button wire:click="deleteSales({{ $sale->id }})"
+                                        wire:confirm="Are you Sure want to delete this sales"
                                         class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-semibold transition duration-150">
                                         Delete
                                     </button>
@@ -105,7 +107,8 @@
 
                 <!-- Modal Body -->
                 <div class="p-6">
-                    <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Order Details ({{ $selectedSale->id }})</h2>
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Order Details
+                        ({{ $selectedSale->id }})</h2>
 
                     <div class="grid grid-cols-2 gap-10">
                         <!-- Sales Details Section -->
@@ -150,7 +153,8 @@
                                 </div>
                                 <div class="flex justify-between py-2 border-b border-gray-100 dark:border-gray-700">
                                     <span class="font-medium">Contact:</span>
-                                    <span class="text-gray-900 dark:text-white">{{ $selectedSale->customer->contact }}</span>
+                                    <span
+                                        class="text-gray-900 dark:text-white">{{ $selectedSale->customer->contact }}</span>
                                 </div>
                                 <div class="flex justify-between py-2 border-b border-gray-100 dark:border-gray-700">
                                     <span class="font-medium">Email:</span>
@@ -158,78 +162,79 @@
                                 </div>
                                 <div class="flex  py-2 border-b border-gray-100 dark:border-gray-700">
                                     <span class="font-medium">Address:</span>
-                                    <span class="text-end text-gray-900 dark:text-white">{{ $selectedSale->customer->address->address }},{{ $selectedSale->customer->address->city }}, {{ $selectedSale->customer->address->state }},{{ $selectedSale->customer->address->pincode }}</span>
+                                    <span
+                                        class="text-end text-gray-900 dark:text-white">{{ $selectedSale->customer->address->address }},{{ $selectedSale->customer->address->city }},
+                                        {{ $selectedSale->customer->address->state }},{{ $selectedSale->customer->address->pincode }}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- Sales Items Section -->
-                        <div class="mb-6">
-                            <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white border-b pb-2">Order Items
-                            </h3>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                    <thead class="bg-gray-50 dark:bg-gray-700">
-                                        <tr>
-                                            <th scope="col"
-                                                class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                Item</th>
-                                            <th scope="col"
-                                                class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                Qty</th>
-                                            <th scope="col"
-                                                class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                Price</th>
-                                            <th scope="col"
-                                                class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                        @foreach ($selectedSale->items as $item)
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white border-b pb-2">Order Items
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead class="bg-gray-50 dark:bg-gray-700">
+                                    <tr>
+                                        <th scope="col"
+                                            class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Item</th>
+                                        <th scope="col"
+                                            class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Qty</th>
+                                        <th scope="col"
+                                            class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Price</th>
+                                        <th scope="col"
+                                            class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    @foreach ($selectedSale->items as $item)
                                         <tr>
                                             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                {{ $item->product->name }}</td>
-                                            <td
-                                                class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                                                {{ $item->product->name }}
+                                            </td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                                 2
                                             </td>
-                                            <td
-                                                class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                                 ₹500.00</td>
                                             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                 ₹1000.00</td>
                                         </tr>
-                                        @endforeach
-                                        
-                                    </tbody>
-                                    <tfoot class="bg-gray-50 dark:bg-gray-700">
-                                        <tr>
-                                            <td colspan="3"
-                                                class="px-4 py-2 text-right text-sm font-medium text-gray-900 dark:text-white">
-                                                Subtotal</td>
-                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                ₹2200.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3"
-                                                class="px-4 py-2 text-right text-sm font-medium text-gray-900 dark:text-white">
-                                                Tax (5%)</td>
-                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                ₹ {{$selectedSale->tax}}</td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3"
-                                                class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-white">
-                                                Total</td>
-                                            <td
-                                                class="px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-white">
-                                                ₹{{$selectedSale->total_amount}}</td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
+                                    @endforeach
+
+                                </tbody>
+                                <tfoot class="bg-gray-50 dark:bg-gray-700">
+                                    <tr>
+                                        <td colspan="3"
+                                            class="px-4 py-2 text-right text-sm font-medium text-gray-900 dark:text-white">
+                                            Subtotal</td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                            ₹2200.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3"
+                                            class="px-4 py-2 text-right text-sm font-medium text-gray-900 dark:text-white">
+                                            Tax (5%)</td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                            ₹ {{$selectedSale->tax}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3"
+                                            class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-white">
+                                            Total</td>
+                                        <td
+                                            class="px-4 py-2 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-white">
+                                            ₹{{$selectedSale->total_amount}}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
                         </div>
+                    </div>
 
                     <div class="mt-6 flex justify-end">
                         <button @click="open = false; $wire.closeModal()"

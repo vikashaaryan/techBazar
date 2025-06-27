@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('quotation_no');
             $table->date('valid_date');
-            $table->enum('status',['sent','draft','accepted','rejected','cancelled']);
+            $table->enum('status',['sent','draft','accepted','rejected','converted']);
             $table->foreignId('customer_id')->constrained()->onDelete('CASCADE');
             $table->string('notes')->nullable();
             $table->decimal('subtotal');

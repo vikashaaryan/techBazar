@@ -1,70 +1,75 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Quotation;
 
-use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Quote;
-use App\Models\QuotesItems;
 use Devrabiul\ToastMagic\Facades\ToastMagic;
-use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Title('Quotation')]
-class CreateQuotation extends Component
+#[Title('Edit Quotation')]
+class EditQuotation extends Component
 {
     public $status = 'draft', $notes;
-    public $subtotal = 0, $tax = 0, $taxRate = 0.18, $total = 0, $total_discount = 0;
+    public $subtotal = 0, $tax = 0, $taxRate = 0.18, $total = 0, $total_discount = 0, $discount_amount = 0;
     public $quotation_no, $datePrefix, $lastQuote, $lastIncrement, $newIncrement, $validQuotationDate;
-    public $search = '', $selectedCustomer = null, $isSearching = false, $customers = [];
     public $products;
 
-    public function mount()
+    public $quotation;
+    public $quotationId;
+
+    public function mount($quotation)
     {
-        // for quote no automatic generation
-        $this->datePrefix = 'Q-' . now()->format('Ymd');
-        $this->lastQuote = Quote::where('quotation_no', 'like', $this->datePrefix . '%')
-            ->orderBy('quotation_no', 'desc')
-            ->first();
-        if ($this->lastQuote) {
-            $this->lastIncrement = (int) substr($this->lastQuote->quotation_no, -3);
-            $this->newIncrement = str_pad($this->lastIncrement + 1, 3, '0', STR_PAD_LEFT);
-        } else {
-            $this->newIncrement = '001';
-        }
-        $this->quotation_no = $this->datePrefix . '-' . $this->newIncrement;
-        // quote valid date (7 days)
-        $this->validQuotationDate = date('Y-m-d', strtotime('+7 days'));
+        $this->quotationId = $quotation;
+        $this->quotation = Quote::with(['items', 'customer'])->findOrFail($this->quotationId);
         $this->products = Product::all();
+
+        // Initialize form fields with existing quotation data
+        $this->status = $this->quotation->status;
+        $this->notes = $this->quotation->notes;
+        $this->subtotal = $this->quotation->subtotal;
+        $this->tax = $this->quotation->tax;
+        $this->total = $this->quotation->total;
+        $this->discount_amount = $this->quotation->discount_amount;
+        $this->total_discount = $this->quotation->discount;
+        $this->selectedCustomer = $this->quotation->customer_id;
+
+
+        // Initialize items from existing quotation
+        $this->items = $this->quotation->items->map(function ($item) {
+            return [
+                'product_id' => $item->product_id,
+                'description' => $item->description,
+                'mrp' => $item->mrp,
+                'quantity' => $item->quantity,
+                'unit' => $item->unit,
+                'discount_percent' => $item->discount_percent,
+                'sell_price' => $item->sell_price,
+                'total' => $item->total,
+                'discount_amount' => $item->discount_amount,
+            ];
+        })->toArray();
+
+        // Add empty item if no items exist
+        if (empty($this->items)) {
+            $this->items = [
+                [
+                    'product_id' => null,
+                    'description' => '',
+                    'mrp' => 0,
+                    'quantity' => 1,
+                    'unit' => 'piece',
+                    'discount' => 0,
+                    'sell_price' => 0,
+                    'total' => 0,
+                    'discount_amount' => 0,
+                ]
+            ];
+        }
     }
 
-    // Live search customer with debounce (300ms delay)
-    public function updatedSearch()
-    {
-        $this->isSearching = true;
 
-        $this->customers = Customer::query()
-            ->where('name', 'like', '%' . $this->search . '%')
-            ->take(5) // Limit results
-            ->get();
-
-        $this->isSearching = false;
-    }
-    // Select customer
-    public function selectCustomer($customerId)
-    {
-        $this->selectedCustomer = Customer::find($customerId);
-        $this->search = ''; // Clear search term after selection
-    }
-
-    public function clearSelection()
-    {
-        $this->selectedCustomer = null;
-        $this->search = '';
-        $this->customers = [];
-    }
-    // end customer logic functions
     public $items = [
         [
             'product_id' => null,
@@ -151,8 +156,13 @@ class CreateQuotation extends Component
             if ($product) {
                 $item['mrp'] = $product->mrp;
                 $item['sell_price'] = $product->sell_price;
-                $item['discount_amount'] = ($product->mrp - $product->sell_price);
-                $item['discount'] = round((($product->mrp - $product->sell_price) / $product->mrp) * 100, 2);
+
+                // Default to 1 qty if not yet set
+                $qty = isset($item['quantity']) ? $item['quantity'] : 1;
+
+                $unit_discount = $product->mrp - $product->sell_price;
+                $item['discount_amount'] = $unit_discount * $qty;
+                $item['discount'] = round(($unit_discount / $product->mrp) * 100, 2);
             }
         }
 
@@ -160,6 +170,7 @@ class CreateQuotation extends Component
         $this->calculateItemTotal($index);
         $this->calculateSummary();
     }
+
 
     public function calculateItemTotal($index)
     {
@@ -201,60 +212,47 @@ class CreateQuotation extends Component
         array_splice($this->items, $index + 1, 0, [$duplicate]);
     }
 
-    public $selectedCustomerId;
-
-    protected function rules()
+    public function saveQuotation()
     {
-        return [
-            'selectedCustomer' => 'required',
+        // Validate the form data
+        $this->validate([
+            'status' => 'required',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|numeric|min:1',
             'items.*.mrp' => 'required|numeric|min:0',
-        ];
-    }
-    protected $messages = [
-        'selectedCustomer.required' => 'Please select a customer.',
-        'items.*.product_id.required' => 'Each item must have a selected product.',
-        'items.*.quantity.required' => 'Quantity is required.',
-    ];
-    public function createQuote()
-    {
-        $this->validate();
-        $quote = Quote::create([
-            'quotation_no' => $this->quotation_no,
-            'valid_date' => $this->validQuotationDate,
-            'status' => $this->status,
-            'customer_id' => $this->selectedCustomer['id'],
-            'subtotal' => $this->subtotal,
-            'discount' => $this->total_discount,
-            'tax' => $this->tax,
-            'total' => $this->total,
-            'notes' => $this->notes,
+            'items.*.discount' => 'nullable|numeric|min:0|max:100',
         ]);
 
+        // Update the quotation
+        $this->quotation->update([
+            'status' => $this->status,
+            'notes' => $this->notes,
+            'subtotal' => $this->subtotal,
+            'tax' => $this->tax,
+            'total' => $this->total,
+            'discount' => $this->total_discount,
+        ]);
+
+        // Sync items - delete old ones and create new ones
+        $this->quotation->items()->delete();
+
         foreach ($this->items as $item) {
-            QuotesItems::create([
-                'quote_id' => $quote->id,
+            $this->quotation->items()->create([
                 'product_id' => $item['product_id'],
                 'description' => $item['description'],
+                'mrp' => $item['mrp'],
                 'quantity' => $item['quantity'],
                 'unit' => $item['unit'],
-                'mrp' => $item['mrp'],
-                'discount_amount' => $item['discount_amount'] ?? 0,
-                'discount_percent' => $item['discount'] ?? 0,
-                'total' => $item['total'] ?? 0,
-                'tax' => 18, // Assuming fixed
+                'discount' => $item['discount_amount'],
             ]);
         }
-        ToastMagic::success('Quotation Created Successfully');
-        $this->redirect('/quotations'); 
 
+        ToastMagic::success('Quotation updated successfully!');
+        return redirect()->route('showQuotation', $this->quotationId);
     }
-
     public function render()
     {
-        $customers = Customer::where('name', 'like', '%' . $this->search . '%')->get();
-        return view('livewire.quotation.create-quotation', compact('customers'));
+        return view('livewire.quotation.edit-quotation');
     }
 }
