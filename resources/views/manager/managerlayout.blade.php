@@ -13,8 +13,18 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
         document.addEventListener('alpine:init', () => {
-            Alpine.data('quotationForm', () => ({
-                // ... your methods & data
+            Alpine.data('app', () => ({
+                sidebarOpen: true,
+                toggleSidebar() {
+                    this.sidebarOpen = !this.sidebarOpen;
+                    localStorage.setItem('sidebarOpen', this.sidebarOpen);
+                },
+                init() {
+                    const savedState = localStorage.getItem('sidebarOpen');
+                    if (savedState !== null) {
+                        this.sidebarOpen = savedState === 'true';
+                    }
+                }
             }));
         });
     </script>
@@ -22,18 +32,26 @@
     {!! ToastMagic::styles() !!}
 </head>
 
-<body class="bg-gray-200">
+<body class="bg-white" x-data="app" x-init="init()">
 
+    <!-- Top Navigation -->
     @include('manager.components.navbar')
 
-    <div class="flex gap-5 w-full ">
-        <div class="w-2/12">
-            @include('manager.components.sidebar')
-        </div>
-        <div class="w-10/12 mt-16">
-            @section('content')
-            @show
-        </div>
+    <!-- Sidebar and Main Content -->
+    <div class="flex pt-16">
+        <!-- Sidebar -->
+        @include('manager.components.sidebar')
+
+        <!-- Main Content -->
+        <main 
+            class="flex-1 p-6 transition-all duration-300 ease-in-out"
+            :class="sidebarOpen ? 'ml-64' : 'ml-20'"
+        >
+            <div class="bg-[#F4EEFF] rounded-lg shadow-sm p-6">
+                @section('content')
+                @show
+            </div>
+        </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
