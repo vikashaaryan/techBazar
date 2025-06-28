@@ -160,13 +160,15 @@
                                     <div>
                                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Name</p>
                                         <p class="text-gray-800 dark:text-gray-100 font-medium">
-                                            {{ $quotation->customer->name }}</p>
+                                            {{ $quotation->customer->name }}
+                                        </p>
                                     </div>
 
                                     <div>
                                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Contact</p>
                                         <p class="text-gray-800 dark:text-gray-100 font-medium">
-                                            {{ $quotation->customer->contact }}</p>
+                                            {{ $quotation->customer->contact }}
+                                        </p>
                                     </div>
                                 </div>
 
@@ -175,13 +177,15 @@
                                     <div>
                                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Email</p>
                                         <p class="text-gray-800 dark:text-gray-100 font-medium">
-                                            {{ $quotation->customer->email }}</p>
+                                            {{ $quotation->customer->email }}
+                                        </p>
                                     </div>
 
                                     <div>
                                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Address</p>
                                         <p class="text-gray-800 dark:text-gray-100 font-medium">
-                                            {{ $quotation->customer->address->address }}</p>
+                                            {{ $quotation->customer->address->address }}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -199,19 +203,22 @@
 
                             <!-- Up/Down/Delete Buttons -->
                             <div class="absolute left-2 top-4 flex flex-col space-y-2">
-                                <button type="button" wire:click="moveItemUp({{ $index }})" class="text-blue-500 hover:text-blue-700">
+                                <button type="button" wire:click="moveItemUp({{ $index }})"
+                                    class="text-blue-500 hover:text-blue-700">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M5 15l7-7 7 7" />
                                     </svg>
                                 </button>
-                                <button type="button" wire:click="moveItemDown({{ $index }})" class="text-blue-500 hover:text-blue-700">
+                                <button type="button" wire:click="moveItemDown({{ $index }})"
+                                    class="text-blue-500 hover:text-blue-700">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
-                                <button type="button" wire:click="removeItem({{ $index }})" class="text-red-500 hover:text-red-700">
+                                <button type="button" wire:click="removeItem({{ $index }})"
+                                    class="text-red-500 hover:text-red-700">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M6 18L18 6M6 6l12 12" />
@@ -236,7 +243,7 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error('items.'.$index.'.product_id')
+                                        @error('items.' . $index . '.product_id')
                                             <p class="text-red-500 font-semibold">{{ $message }}</p>
                                         @enderror
                                     </div>
@@ -263,7 +270,7 @@
                                         <input type="number" wire:model.lazy="items.{{ $index }}.quantity"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
                                             placeholder="Quantity">
-                                        @error('items.'.$index.'.quantity')
+                                        @error('items.' . $index . '.quantity')
                                             <p class="text-red-500 font-semibold">{{ $message }}</p>
                                         @enderror
                                     </div>
@@ -306,28 +313,38 @@
                     <div class="space-y-4 text-sm">
                         <div class="flex justify-between">
                             <span class="text-gray-500">Subtotal</span>
-                            <span wire:model="subtotal" class="font-medium text-gray-700">₹{{ number_format($subtotal, 2) }}</span>
+                            <span wire:model="subtotal"
+                                class="font-medium text-gray-700">₹{{ number_format($subtotal, 2) }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-500">Discount</span>
-                            <span wire:model="total_discount" class="font-medium text-green-600">₹{{ number_format($total_discount, 2) }}</span>
+                            <span wire:model="total_discount"
+                                class="font-medium text-green-600">₹{{ number_format($total_discount, 2) }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-500">Tax <span class="text-xs text-gray-400">(18%)</span></span>
-                            <span wire:model="tax" class="font-medium text-orange-600">₹{{ number_format($tax, 2) }}</span>
+                            <span wire:model="tax"
+                                class="font-medium text-orange-600">₹{{ number_format($tax, 2) }}</span>
                         </div>
 
                         <div class="flex justify-between border-t border-gray-100 pt-4 text-base">
                             <span class="font-semibold text-gray-800">Total</span>
-                            <span wire:model="total" class="font-bold text-blue-600 text-lg">₹{{ number_format($total, 2) }}</span>
+                            <span wire:model="total"
+                                class="font-bold text-blue-600 text-lg">₹{{ number_format($total, 2) }}</span>
                         </div>
                     </div>
                 </div>
                 <!-- Submit Button -->
-                <button type="submit"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg shadow-md transition-colors font-medium">
-                    Update Quotation
-                </button>
+                <div class="flex gap-10 justify-between">
+                    <button type="button" wire:click="convertToInvoice"
+                        class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg shadow-md transition-colors font-medium">
+                        Convert To Invoice
+                    </button>
+                    <button type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg shadow-md transition-colors font-medium">
+                        Update Quotation
+                    </button>
+                </div>
             </form>
         </div>
     </div>

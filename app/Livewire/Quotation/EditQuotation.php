@@ -2,8 +2,11 @@
 
 namespace App\Livewire\Quotation;
 
+use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\Quote;
+use App\Models\Sales;
+use App\Models\SalesItems;
 use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -12,8 +15,9 @@ use Livewire\Component;
 class EditQuotation extends Component
 {
     public $status = 'draft', $notes;
-    public $subtotal = 0, $tax = 0, $taxRate = 0.18, $total = 0, $total_discount = 0, $discount_amount = 0;
+    public $subtotal = 0, $tax = 0, $taxRate = 0.18, $total = 0, $total_discount = 0, $discount_amount = 0, $discount_percent = 0;
     public $quotation_no, $datePrefix, $lastQuote, $lastIncrement, $newIncrement, $validQuotationDate;
+    public $invoice_no, $datePrefixInv, $lastInvoice, $newIncrementInv;
     public $products;
 
     public $quotation;
@@ -67,6 +71,18 @@ class EditQuotation extends Component
                 ]
             ];
         }
+
+        // invoice no generator
+         $this->datePrefixInv = 'I-' . now()->format('Ymd');
+        $this->lastInvoice = Invoice::where('invoice_no', 'like', $this->datePrefixInv . '%')
+            ->orderBy('invoice_no', 'desc')
+            ->first();
+
+        $this->newIncrementInv = $this->lastInvoice
+            ? str_pad((int) substr($this->lastInvoice->invoice_no, -3) + 1, 3, '0', STR_PAD_LEFT)
+            : '001';
+
+        $this->invoice_no = $this->datePrefixInv . '-' . $this->newIncrementInv;
     }
 
 
@@ -171,7 +187,6 @@ class EditQuotation extends Component
         $this->calculateSummary();
     }
 
-
     public function calculateItemTotal($index)
     {
         $item = &$this->items[$index];
@@ -211,6 +226,41 @@ class EditQuotation extends Component
         $duplicate = $this->items[$index];
         array_splice($this->items, $index + 1, 0, [$duplicate]);
     }
+    public function convertToInvoice(){
+         $invoice = Invoice::create([
+            'invoice_no' => $this->invoice_no,
+            'customer_id' => $this->quotation->customer_id,
+            'status' => 'draft',
+            'subtotal' => $this->subtotal,
+            'tax' => $this->tax,
+            'total' => $this->total,
+            'discount' => $this->total_discount,
+            'notes' => $this->notes,
+        ]);
+
+        $sales = Sales::create([
+            'customer_id' => $this->quotation->customer_id,
+            'invoice_id' => $invoice->id,
+            'payment_status' => 'due',
+            'discount' => $this->total_discount,
+            'tax' => $this->tax,
+            'total_amount' => $this->total,
+            'amount_paid' => 0,
+        ]);
+
+        foreach ($this->items as $item) {
+            SalesItems::create([
+                'sale_id' => $sales->id,
+                'product_id' => $item['product_id'],
+                'discount' => $item['discount_amount'],
+                'total' => $item['total'],
+                'qty' => $item['quantity'],
+                'invoice_id' => $invoice->id,
+            ]);
+        }
+        ToastMagic::success('Quotation Converted To Invoice');
+        return redirect()->route('showInvoice');
+    }
 
     public function saveQuotation()
     {
@@ -221,7 +271,7 @@ class EditQuotation extends Component
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|numeric|min:1',
             'items.*.mrp' => 'required|numeric|min:0',
-            'items.*.discount' => 'nullable|numeric|min:0|max:100',
+            'items.*.discount_percent' => 'nullable|numeric|min:0|max:100',
         ]);
 
         // Update the quotation
@@ -244,7 +294,8 @@ class EditQuotation extends Component
                 'mrp' => $item['mrp'],
                 'quantity' => $item['quantity'],
                 'unit' => $item['unit'],
-                'discount' => $item['discount_amount'],
+                'discount_amount' => $item['discount_amount'],
+                'total' => $item['total'],
             ]);
         }
 
