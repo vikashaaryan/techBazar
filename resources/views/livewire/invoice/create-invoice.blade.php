@@ -516,46 +516,54 @@
 
 
                 <button id="rzp-button" type="button"
-                    class="w-full text-white font-semibold bg-green-600 p-2 rounded text-xl">
-                    Pay & Generate Invoice
-                </button>
-                <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-                <script>
-                    document.getElementById('rzp-button').addEventListener('click', function(e) {
-                        e.preventDefault();
-
-                        let amount = @this.amount_paid;
-                        if (!amount || amount <= 0) {
-                            alert('Please enter a valid amount');
-                            return;
+                class="w-full text-white font-semibold bg-green-600 p-2 rounded text-xl">
+                Pay & Generate Invoice
+            </button>
+            
+            <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+            
+            <script>
+                document.getElementById('rzp-button').addEventListener('click', function (e) {
+                    e.preventDefault();
+            
+                    let amount = @this.amount_paid;
+            
+                    // ✅ IF amount is zero, skip Razorpay and directly create invoice
+                    if (!amount || amount == 0) {
+                        if (confirm("Amount is ₹0. Proceed without payment?")) {
+                            @this.call('createInvoice');
                         }
-
-                        var options = {
-                            "key": "{{ env('RAZORPAY_KEY') }}",
-                            "amount": amount * 100,
-                            "currency": "INR",
-                            "name": "Invoice Payment",
-                            "description": "Sales Invoice",
-                            "handler": function(response) {
-                                @this.call('processPaymentAndCreateInvoice',
-                                    response.razorpay_payment_id,
-                                    response.razorpay_order_id,
-                                    response.razorpay_signature
-                                );
-                            },
-                            "prefill": {
-                                "name": "{{ Auth::user()->name ?? 'Guest' }}",
-                                "email": "{{ Auth::user()->email ?? 'email@example.com' }}"
-                            },
-                            "theme": {
-                                "color": "#28a745"
-                            }
-                        };
-
-                        var rzp1 = new Razorpay(options);
-                        rzp1.open();
-                    });
-                </script>
+                        return;
+                    }
+            
+                    // ✅ ELSE use Razorpay
+                    var options = {
+                        "key": "{{ env('RAZORPAY_KEY') }}",
+                        "amount": amount * 100, // amount in paise
+                        "currency": "INR",
+                        "name": "Invoice Payment",
+                        "description": "Sales Invoice",
+                        "handler": function (response) {
+                            @this.call('processPaymentAndCreateInvoice',
+                                response.razorpay_payment_id,
+                                response.razorpay_order_id,
+                                response.razorpay_signature
+                            );
+                        },
+                        "prefill": {
+                            "name": "{{ Auth::user()->name ?? 'Guest' }}",
+                            "email": "{{ Auth::user()->email ?? 'email@example.com' }}"
+                        },
+                        "theme": {
+                            "color": "#28a745"
+                        }
+                    };
+            
+                    var rzp1 = new Razorpay(options);
+                    rzp1.open();
+                });
+            </script>
+            
 
 
 

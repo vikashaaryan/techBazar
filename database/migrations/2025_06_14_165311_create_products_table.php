@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('name');
             $table->string('sku')->unique()->nullable();
             $table->foreignId('category'); // foreign key
-            $table->string('unit');
+            $table->string('unit')->nullable();
             $table->decimal('mrp', 10, 2);
             $table->decimal('sell_price', 10, 2);
             $table->integer('qty');

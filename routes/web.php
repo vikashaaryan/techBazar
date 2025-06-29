@@ -8,7 +8,6 @@ use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\QuoteController;
-use App\Http\Controllers\RazorpayController;
 use App\Http\Controllers\RazorpayPaymentController;
 use App\Http\Controllers\SupplierController;
 use App\Livewire\Admin\Dashboard;
@@ -68,6 +67,10 @@ Route::group(['middleware' => ['auth', 'role:staff|admin']], function () {
     Route::get('/generate-pdf/{id}', [PdfController::class, 'genratePdf'])->name('generate.pdf');
     Route::get('/download-pdf/{id}', [PdfController::class, 'downloadPdf'])
         ->name('downloadPdf');
+
+    // manager-setting 
+    Route::get('manager/setting',[ManagerController::class, 'managerSetting'])->name('manager.setting');
+    
 });
 
 // Admin Routes (admin-only access)

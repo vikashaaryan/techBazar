@@ -42,7 +42,6 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'sku' => 'nullable|string|max:100|unique:products,sku',
             'category' => 'required|exists:categories,id',
-            'unit' => 'required|string|max:50',
             'mrp' => 'required|numeric|min:0',
             'sell_price' => 'required|numeric|min:0|lte:mrp',
             'qty' => 'required|integer|min:0',
@@ -57,7 +56,7 @@ class ProductController extends Controller
 
         Product::create($data);
         ToastMagic::success('Product added successfully!');
-        return redirect()->back();
+        return redirect()->route('product.index');
     }
 
     /**

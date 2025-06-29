@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -28,34 +27,27 @@
             }));
         });
     </script>
-
     {!! ToastMagic::styles() !!}
 </head>
-
 <body class="bg-white" x-data="app" x-init="init()">
-
     <!-- Top Navigation -->
     @include('manager.components.navbar')
-
     <!-- Sidebar and Main Content -->
     <div class="flex pt-16">
         <!-- Sidebar -->
         @include('manager.components.sidebar')
-
         <!-- Main Content -->
         <main 
             class="flex-1 p-6 transition-all duration-300 ease-in-out"
-            :class="sidebarOpen ? 'ml-64' : 'ml-20'"
+            :class="sidebarOpen ? 'ml-[18%]' : 'ml-20'"
         >
-            <div class="bg-[#F4EEFF] rounded-lg shadow-sm p-6">
+            <div class="bg-[#F4EEFF] rounded-lg shadow-sm p-2">
                 @section('content')
                 @show
             </div>
         </main>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
     {!! ToastMagic::scripts() !!}
 </body>
-
 </html>

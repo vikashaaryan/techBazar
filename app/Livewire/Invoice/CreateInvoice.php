@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Livewire\Invoice;
+
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Payment;
@@ -18,8 +20,10 @@ class CreateInvoice extends Component
     public $datePrefix, $lastInvoice, $lastIncrement, $invoice_no, $newIncrement;
     public $subtotal = 0, $tax = 0, $taxRate = 0.18, $total = 0, $total_discount = 0;
     public $search = '', $selectedCustomer = null, $isSearching = false, $customers = [];
-    public $products;
-    public $items = [];
+    public $products, $items = [];
+
+    // Razorpay fields
+    public $razorpay_payment_id, $razorpay_order_id, $razorpay_signature;
 
     public function mount()
     {
@@ -34,6 +38,7 @@ class CreateInvoice extends Component
 
         $this->invoice_no = $this->datePrefix . '-' . $this->newIncrement;
         $this->products = Product::all();
+
         $this->items = [[
             'product_id' => null,
             'description' => '',
@@ -197,9 +202,11 @@ class CreateInvoice extends Component
     {
         $this->validate();
 
+        $customerId = $this->selectedCustomer?->id;
+
         $invoice = Invoice::create([
             'invoice_no' => $this->invoice_no,
-            'customer_id' => $this->selectedCustomer?->id,
+            'customer_id' => $customerId,
             'status' => $this->status,
             'due_date' => $this->due_date,
             'subtotal' => $this->subtotal,
@@ -210,7 +217,7 @@ class CreateInvoice extends Component
         ]);
 
         $sales = Sales::create([
-            'customer_id' => $this->selectedCustomer?->id,
+            'customer_id' => $customerId,
             'invoice_id' => $invoice->id,
             'payment_status' => $this->payment_status,
             'discount' => $this->total_discount,
@@ -231,16 +238,23 @@ class CreateInvoice extends Component
         }
 
         Payment::create([
-            'invoice_id' => $invoice->id,
-            'type' => 'customer',
-            'payment_for' => 'sell',
-            'sale_id' => $sales->id,
-            'method' => $this->method,
-            'amount_paid' => $this->amount_paid,
+            'invoice_id'     => $invoice->id,
+            'customer_id'    => $customerId,
+            'type'           => 'customer',
+            'payment_for'    => 'sell',
+            'sale_id'        => $sales->id,
+            'method'         => $this->method,
+            'amount'         => $this->amount_paid,
+            'amount_paid'    => $this->amount_paid,
             'payment_status' => $this->payment_status,
+            'status'         => 'captured',
+
+            // Razorpay
+            'payment_id'     => $this->razorpay_payment_id ?? null,
+            'order_id'       => $this->razorpay_order_id ?? null,
+            'signature'      => $this->razorpay_signature ?? null,
         ]);
 
-        ToastMagic::success('Invoice Created Successfully');
         return redirect('/invoices');
     }
 
@@ -254,16 +268,18 @@ class CreateInvoice extends Component
                 $payment->capture(['amount' => $payment->amount]);
             }
 
-            $this->payment_status = 'paid';
             $this->method = 'razorpay';
             $this->amount_paid = $payment->amount / 100;
+            $this->payment_status = 'paid';
+            $this->razorpay_payment_id = $payment->id;
+            $this->razorpay_order_id = $payment->order_id ?? null;
+            $this->razorpay_signature = request('razorpay_signature');
 
             $this->createInvoice();
-
-            ToastMagic::success('Payment & Invoice created successfully');
-
+            ToastMagic::success('Payment successful and invoice created');
+            return redirect('/invoices');
         } catch (\Exception $e) {
-            ToastMagic::error('Payment failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
         }
     }
 

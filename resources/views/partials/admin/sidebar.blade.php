@@ -1,4 +1,4 @@
-<div class="sidebar bg-dark-800 text-white h-full fixed md:relative flex flex-col z-20" id="sidebar">
+<div class="sidebar bg-dark-800 text-white h-full fixed md:relative flex  flex-col z-20" id="sidebar">
     <!-- Logo/Brand - Now with lock functionality -->
     <div class="p-4 flex items-center justify-center md:justify-start border-b border-gray-700/50 logo-container"
         id="logo-container">
@@ -11,7 +11,7 @@
         <span class="sidebar-text ml-3 font-bold text-xl">{{env('APP_NAME')}} | Admin</span>
     </div>
 
-    <div class="flex-1 overflow-y-auto py-4">
+    <div class="flex-1 scrollable-containeroverflow-y-auto py-4">
         <!-- Dashboard Section -->
         <div class="px-4 py-2">
             <div
@@ -258,3 +258,15 @@
         </div>
     </div>
 </div>
+<style>
+    .scrollable-container {
+      overflow-y: auto; /* Enables vertical scrolling when needed */
+      scrollbar-width: none; /* For Firefox */
+      -ms-overflow-style: none; /* For IE and Edge */
+    }
+    
+    /* For WebKit browsers (Chrome, Safari) */
+    .scrollable-container::-webkit-scrollbar {
+      display: none;
+    }
+ </style>

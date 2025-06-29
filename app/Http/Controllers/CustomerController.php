@@ -72,7 +72,7 @@ class CustomerController extends Controller
             'address_id' => $address->id,
         ]);
         ToastMagic::success('Customer Add successfully!');
-        return redirect()->back();
+        return redirect()->route('customer.index');
     }
 
     /**
