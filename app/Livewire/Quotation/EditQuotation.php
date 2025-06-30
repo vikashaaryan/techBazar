@@ -229,6 +229,7 @@ class EditQuotation extends Component
     public function convertToInvoice(){
          $invoice = Invoice::create([
             'invoice_no' => $this->invoice_no,
+            'quotation_id' => $this->quotation->id,
             'customer_id' => $this->quotation->customer_id,
             'status' => 'draft',
             'subtotal' => $this->subtotal,
