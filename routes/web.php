@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\RazorpayPaymentController;
+use App\Http\Controllers\SalesController;
 use App\Http\Controllers\SupplierController;
 use App\Livewire\Admin\Dashboard;
 use App\Livewire\Admin\ManageSales;
@@ -70,6 +71,12 @@ Route::group(['middleware' => ['auth', 'role:staff|admin']], function () {
 
     // manager-setting 
     Route::get('manager/setting',[ManagerController::class, 'managerSetting'])->name('manager.setting');
+    Route::get('/sales',[SalesController::class, 'create'])->name('manage.sales');
+    Route::get('/sales/histroy', [SalesController::class, 'index'])->name('sales.history');
+    Route::get('/sales/history/{sale}', [SalesController::class, 'show'])->name('manager.sales-history.show');
+    Route::get('/sales/history/{sale}/print', [SalesController::class, 'printInvoice'])->name('manager.sales-history.print');
+    Route::get('/sales/history/export', [SalesController::class, 'export'])->name('manager.sales-history.export');
+
     
 });
 

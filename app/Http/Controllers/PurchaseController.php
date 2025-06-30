@@ -16,15 +16,33 @@ class PurchaseController extends Controller
     /**
      * Display the purchase list page.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $purchases = Purchase::with('purchaseItems.product')
-            ->whereIn('id', function ($query) {
-                $query->selectRaw('MAX(id)')
-                    ->from('purchases')
-                    ->groupBy('supplier_id');
-            })
-            ->get();
+        $query = Purchase::with('supplier')
+            ->latest();
+
+        if ($request->search) {
+            $query->where(function ($q) use ($request) {
+                $q->where('id', 'like', "%{$request->search}%")
+                    ->orWhereHas('supplier', function ($q) use ($request) {
+                        $q->where('supplier_name', 'like', "%{$request->search}%");
+                    });
+            });
+        }
+
+        if ($request->status) {
+            $query->where('payment_status', $request->status);
+        }
+
+        if ($request->from_date) {
+            $query->where('purchase_date', '>=', $request->from_date);
+        }
+
+        if ($request->to_date) {
+            $query->where('purchase_date', '<=', $request->to_date);
+        }
+
+        $purchases = $query->paginate(15);
 
         return view('manager.purchase.manage-purchase', compact('purchases'));
     }

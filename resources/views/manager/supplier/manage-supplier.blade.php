@@ -3,7 +3,6 @@
 @section('title')
     Supplier Management
 @endsection
-
 @section('content')
     <div class="flex-1 p-6">
         <!-- Header with Gradient Background -->
@@ -141,10 +140,7 @@
                     </tbody>
                 </table>
             </div>
-
-           
         </div>
-
         <!-- Empty State -->
         <div id="emptyState" class="hidden bg-white rounded-xl shadow-md p-8 text-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -156,11 +152,9 @@
                 Reset filters
             </button>
         </div>
-        
         @include('manager.supplier.component.add-supplier')
         @include('manager.supplier.component.edit-supplier')
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('searchInput');

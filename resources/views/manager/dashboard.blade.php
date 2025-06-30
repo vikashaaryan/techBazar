@@ -120,47 +120,31 @@
                 </div>
                 <div class="p-5">
                     <div class="space-y-3">
+                        @foreach($quoteStats as $stat)
                         <div class="flex items-center justify-between p-2 hover:bg-blue-50/50 rounded-lg transition-colors">
                             <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-gray-400"></div>
-                                <span class="text-sm font-medium text-gray-700">Draft</span>
+                                @php
+                                    $dotColor = match($stat->status) {
+                                        'draft' => 'bg-gray-400',
+                                        'sent' => 'bg-blue-500',
+                                        'accepted' => 'bg-green-500',
+                                        'rejected' => 'bg-red-500',
+                                        'converted' => 'bg-purple-500',
+                                        default => 'bg-gray-400'
+                                    };
+                                @endphp
+                                <div class="w-2 h-2 rounded-full {{ $dotColor }}"></div>
+                                <span class="text-sm font-medium text-gray-700">{{ ucfirst($stat->status) }}</span>
                             </div>
-                            <span class="text-sm font-medium text-gray-600">Rs.173,90</span>
+                            <span class="text-sm font-medium {{ $stat->color_class }}">Rs.{{ number_format($stat->total_amount, 2) }}</span>
                         </div>
-                        <div class="flex items-center justify-between p-2 hover:bg-blue-50/50 rounded-lg transition-colors">
+                        @endforeach
+                        <div class="flex items-center justify-between p-2 bg-blue-50 rounded-lg mt-4">
                             <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-blue-500"></div>
-                                <span class="text-sm font-medium text-gray-700">Sent</span>
+                                <div class="w-2 h-2 rounded-full bg-blue-600"></div>
+                                <span class="text-sm font-medium text-gray-700">Total</span>
                             </div>
-                            <span class="text-sm font-medium text-blue-600">Rs.137.620,13</span>
-                        </div>
-                        <div class="flex items-center justify-between p-2 hover:bg-blue-50/50 rounded-lg transition-colors">
-                            <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-yellow-400"></div>
-                                <span class="text-sm font-medium text-gray-700">Viewed</span>
-                            </div>
-                            <span class="text-sm font-medium text-yellow-500">Rs.0,00</span>
-                        </div>
-                        <div class="flex items-center justify-between p-2 hover:bg-blue-50/50 rounded-lg transition-colors">
-                            <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                                <span class="text-sm font-medium text-gray-700">Approved</span>
-                            </div>
-                            <span class="text-sm font-medium text-green-600">Rs.6.438,17</span>
-                        </div>
-                        <div class="flex items-center justify-between p-2 hover:bg-blue-50/50 rounded-lg transition-colors">
-                            <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-red-500"></div>
-                                <span class="text-sm font-medium text-gray-700">Rejected</span>
-                            </div>
-                            <span class="text-sm font-medium text-red-600">Rs.452.430,00</span>
-                        </div>
-                        <div class="flex items-center justify-between p-2 hover:bg-blue-50/50 rounded-lg transition-colors">
-                            <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-gray-500"></div>
-                                <span class="text-sm font-medium text-gray-700">Canceled</span>
-                            </div>
-                            <span class="text-sm font-medium text-gray-600">Rs.0,00</span>
+                            <span class="text-sm font-bold text-blue-700">Rs.{{ number_format($totalQuotesAmount, 2) }}</span>
                         </div>
                     </div>
                 </div>
@@ -187,43 +171,43 @@
                 </div>
                 <div class="p-5">
                     <div class="space-y-3 mb-4">
+                        @foreach($invoiceStats as $stat)
                         <div class="flex items-center justify-between p-2 hover:bg-blue-50/50 rounded-lg transition-colors">
                             <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-gray-400"></div>
-                                <span class="text-sm font-medium text-gray-700">Draft</span>
+                                @php
+                                    $dotColor = match($stat->status) {
+                                        'draft' => 'bg-gray-400',
+                                        'sent' => 'bg-blue-500',
+                                        'paid' => 'bg-green-500',
+                                        'rejected' => 'bg-red-500',
+                                        'cancelled' => 'bg-gray-500',
+                                        default => 'bg-gray-400'
+                                    };
+                                @endphp
+                                <div class="w-2 h-2 rounded-full {{ $dotColor }}"></div>
+                                <span class="text-sm font-medium text-gray-700">{{ ucfirst($stat->status) }}</span>
                             </div>
-                            <span class="text-sm font-medium text-red-500">-Rs.5.591.109,92</span>
+                            <span class="text-sm font-medium {{ $stat->color_class }}">Rs.{{ number_format($stat->total_amount, 2) }}</span>
                         </div>
-                        <div class="flex items-center justify-between p-2 hover:bg-blue-50/50 rounded-lg transition-colors">
+                        @endforeach
+                        <div class="flex items-center justify-between p-2 bg-blue-50 rounded-lg mt-4">
                             <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-blue-500"></div>
-                                <span class="text-sm font-medium text-gray-700">Sent</span>
+                                <div class="w-2 h-2 rounded-full bg-blue-600"></div>
+                                <span class="text-sm font-medium text-gray-700">Total</span>
                             </div>
-                            <span class="text-sm font-medium text-blue-600">Rs.292.620.475,17</span>
-                        </div>
-                        <div class="flex items-center justify-between p-2 hover:bg-blue-50/50 rounded-lg transition-colors">
-                            <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
-                                <span class="text-sm font-medium text-gray-700">Viewed</span>
-                            </div>
-                            <span class="text-sm font-medium text-yellow-600">Rs.63.520,62</span>
-                        </div>
-                        <div class="flex items-center justify-between p-2 hover:bg-blue-50/50 rounded-lg transition-colors">
-                            <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                                <span class="text-sm font-medium text-gray-700">Paid</span>
-                            </div>
-                            <span class="text-sm font-medium text-green-600">Rs.2.188.174.980,33</span>
+                            <span class="text-sm font-bold text-blue-700">Rs.{{ number_format($totalInvoicesAmount, 2) }}</span>
                         </div>
                     </div>
+                    @if($overdueInvoices > 0)
                     <div
                         class="mt-4 p-3 bg-gradient-to-r from-red-50 to-red-100 border border-red-200 text-red-700 rounded-lg font-medium text-sm flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
-                        <span class="font-semibold">Overdue Invoices:</span> Rs.389.562.466,30
+                        <span class="font-semibold">Overdue Invoices:</span> Rs.{{ number_format($overdueInvoices, 2) }}
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

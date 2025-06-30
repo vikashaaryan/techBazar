@@ -25,5 +25,9 @@ class Sales extends Model
     {
         return $this->hasMany(SalesItems::class, 'sale_id');
     }
+    public function payments()
+    {
+        return $this->hasMany(Payment::class , 'sale_id');
+    }
 
 }

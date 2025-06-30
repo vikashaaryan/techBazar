@@ -91,10 +91,8 @@
                     class="fas fa-chevron-down ml-auto text-xs text-gray-500 transition-transform duration-200"></i>
             </button>
             <div x-show="openSales && sidebarOpen" x-transition class="ml-9 mt-1 space-y-1">
-                <a href="#"
-                    class="block px-3 py-2 text-sm rounded-lg hover:bg-white hover:shadow-sm transition-all text-gray-600 hover:text-gray-900">New
-                    Sale</a>
-                <a href="#"
+              
+                <a href="{{route('sales.history')}}"
                     class="block px-3 py-2 text-sm rounded-lg hover:bg-white hover:shadow-sm transition-all text-gray-600 hover:text-gray-900">Sales
                     History</a>
             </div>

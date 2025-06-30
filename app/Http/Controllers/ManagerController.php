@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Manager;
 use App\Http\Controllers\Controller;
+use App\Models\Sales;
 use App\Models\Staff;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -73,4 +74,5 @@ class ManagerController extends Controller
         $manager = Staff::all();
         return view('manager.manager-settings', compact('manager'));
     }
+   
 }
