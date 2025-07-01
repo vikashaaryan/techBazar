@@ -3,7 +3,7 @@
 @section('title', 'Sale Details')
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
+<div class="container mx-auto px-4 py-8">
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
         <div class="mb-4 md:mb-0">
@@ -143,16 +143,15 @@
                         </div>
                         <div class="sm:col-span-2">
                             <dt class="text-sm font-medium text-gray-500">Address</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $sale->customer->address_id ?? 'N/A' }}</dd>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $sale->customer->address->city ?? 'N/A' }}</dd>
                         </div>
                     </dl>
                     <div class="mt-4 flex space-x-3">
-                        <a href="#" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <a href="" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <svg class="-ml-0.5 mr-2 h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                                <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
                             </svg>
-                            Send Invoice
+                            View Purchase History
                         </a>
                         <a href="#" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <svg class="-ml-0.5 mr-2 h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -247,45 +246,48 @@
                 </div>
             </div>
 
-            <!-- Payment History Card -->
+            <!-- Customer Purchase History Card -->
             <div class="bg-white shadow rounded-lg overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h3 class="text-lg font-medium text-gray-900 flex items-center">
                         <svg class="h-5 w-5 text-blue-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd" />
+                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                         </svg>
-                        Payment History
+                        Purchase History for {{ $sale->customer->name }}
                     </h3>
                 </div>
                 <div class="px-6 py-4">
-                    @if($sale->payments->count() > 0)
+                    @if($customerPurchases->count() > 0)
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Method</th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice</th>
+                                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($sale->payments as $payment)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $payment->created_at->format('d M Y') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ ucfirst($payment->method) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">₹{{ number_format($payment->amount_paid, 2) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                @foreach ($customerPurchases as $customerPurchase)
+                                <tr class="{{ $customerPurchase->id == $sale->id ? 'bg-blue-50' : '' }}">
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ $customerPurchase->created_at->format('M d, Y') }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">#{{ $customerPurchase->invoice->invoice_no }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-right">₹{{ number_format($customerPurchase->total_amount, 2) }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ 
-                                            $payment->status == 'captured' ? 'green' : 
-                                            ($payment->status == 'pending' ? 'yellow' : 'red')
+                                            $customerPurchase->payment_status == 'paid' ? 'green' : 
+                                            ($customerPurchase->payment_status == 'partial' ? 'yellow' : 'red')
                                         }}-100 text-{{ 
-                                            $payment->status == 'captured' ? 'green' : 
-                                            ($payment->status == 'pending' ? 'yellow' : 'red')
+                                            $customerPurchase->payment_status == 'paid' ? 'green' : 
+                                            ($customerPurchase->payment_status == 'partial' ? 'yellow' : 'red')
                                         }}-800">
-                                            {{ ucfirst($payment->status) }}
+                                            {{ ucfirst($customerPurchase->payment_status) }}
                                         </span>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                        <a href="{{ route('sales.show', $customerPurchase->id) }}" class="text-blue-600 hover:text-blue-900">View</a>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -297,10 +299,48 @@
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                             <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                         </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">No payment records</h3>
-                        <p class="mt-1 text-sm text-gray-500">No payment records found for this sale.</p>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">No purchase history</h3>
+                        <p class="mt-1 text-sm text-gray-500">This customer hasn't made any other purchases yet.</p>
                     </div>
                     @endif
+                </div>
+            </div>
+
+            <!-- Product Purchase History Card -->
+            <div class="bg-white shadow rounded-lg overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                        <svg class="h-5 w-5 text-blue-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
+                        </svg>
+                        Product Purchase History
+                    </h3>
+                </div>
+                <div class="px-6 py-4">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Purchased</th>
+                                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Times Purchased</th>
+                                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach ($productHistory as $product)
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{ $product->name }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ $product->last_purchase_date ? $product->last_purchase_date->format('M d, Y') : 'N/A' }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-right">₹{{ $product->last_price ? number_format($product->last_price, 2) : 'N/A' }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-right">{{ $product->times_purchased }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-right">{{ $product->total_quantity }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

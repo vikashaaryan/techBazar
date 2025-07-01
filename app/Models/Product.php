@@ -30,4 +30,8 @@ class Product extends Model
     {
         return $this->purchases()->sum('amount');
     }
+    public function items()
+    {
+        return $this->hasMany(SalesItems::class); // or whatever relationship is appropriate
+    }
 }

@@ -135,8 +135,42 @@ class SalesController extends Controller
 
     public function show(Sales $sale)
     {
-        $sale->load(['customer', 'invoice', 'items.product', 'payments']);
-        return view('manager.sales.components.show-sales', compact('sale'));
+        // Get customer's other purchases (excluding current one)
+        $customerPurchases = Sales::where('customer_id', $sale->customer_id)
+            ->where('id', '!=', $sale->id)
+            ->with(['invoice', 'items'])
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        // Get product purchase history for items in this sale
+        $productIds = $sale->items->pluck('product_id');
+
+        $productHistory = Product::whereIn('id', $productIds)
+            ->withCount(['items as times_purchased' => function ($query) use ($sale) {
+                $query->whereHas('sale', function ($q) use ($sale) {
+                    $q->where('customer_id', $sale->customer_id);
+                });
+            }])
+            ->withSum(['items as total_quantity' => function ($query) use ($sale) {
+                $query->whereHas('sale', function ($q) use ($sale) {
+                    $q->where('customer_id', $sale->customer_id);
+                });
+            }], 'qty')
+            ->with(['items' => function ($query) use ($sale) {
+                $query->whereHas('sale', function ($q) use ($sale) {
+                    $q->where('customer_id', $sale->customer_id)
+                        ->orderBy('created_at', 'desc');
+                })->limit(1);
+            }])
+            ->get()
+            ->map(function ($product) {
+                $product->last_purchase_date = optional($product->items->first())->created_at;
+                $product->last_price = optional($product->items->first())->price;
+                return $product;
+            });
+
+        return view('manager.sales.components.show-sales', compact('sale', 'customerPurchases', 'productHistory'));
     }
 
     public function printInvoice(Sales $sale)

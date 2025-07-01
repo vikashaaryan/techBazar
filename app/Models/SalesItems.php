@@ -19,4 +19,8 @@ class SalesItems extends Model
     {
         return $this->belongsTo(Invoice::class);
     }
+    public function sale()
+    {
+        return $this->belongsTo(Sales::class, 'sale_id');
+    }
 }
