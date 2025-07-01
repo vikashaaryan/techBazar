@@ -1,6 +1,8 @@
 @extends('manager.managerlayout')
 
-@section('title', 'Sale Details')
+@section('title')
+staff panel
+@endsection
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
