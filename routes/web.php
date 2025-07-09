@@ -25,6 +25,7 @@ use App\Livewire\Exchange\ViewExchange;
 use App\Livewire\Invoice\CreateInvoice;
 use App\Livewire\Invoice\EditInvoice;
 use App\Livewire\Invoice\ShowInvoice;
+use App\Livewire\Manager\Profile;
 use App\Livewire\Quotation;
 use App\Livewire\Quotation\EditQuotation;
 use App\Livewire\Quote;
@@ -82,8 +83,7 @@ Route::group(['middleware' => ['auth', 'role:staff|admin']], function () {
     Route::get('/payments/records', [PaymentController::class, 'records'])->name('payments.records');
 
     // manager-setting 
-    Route::get('manager/setting',[ManagerController::class, 'managerSetting'])->name('manager.setting');
-    Route::get('/sales',[SalesController::class, 'create'])->name('manage.sales');
+Route::get('manager/profile',Profile::class)->name('manager.setting');    Route::get('/sales',[SalesController::class, 'create'])->name('manage.sales');
     Route::get('/sales/histroy', [SalesController::class, 'index'])->name('sales.history');
     Route::get('/sales/history/{sale}', [SalesController::class, 'show'])->name('manager.sales-history.show');
     Route::get('/sales/history/{sale}/print', [SalesController::class, 'printInvoice'])->name('manager.sales-history.print');
