@@ -9,253 +9,156 @@ use Livewire\Component;
 
 class EditInvoice extends Component
 {
-    public Invoice $invoice;
+    public $status = 'draft', $payment_status = 'paid', $method = 'cash', $notes, $due_date, $amount_paid;
+    public $datePrefix, $lastInvoice, $lastIncrement, $invoice_no, $newIncrement;
+    public $subtotal = 0, $tax = 0, $taxRate = 0.18, $total = 0, $total_discount = 0;
+    public $products, $items = [];
 
-    // Form fields
-    public $invoice_no;
-    public $invoice_date;
-    public $status;
-    public $notes;
-
-    // Customer search
-    public $customerSearch = '';
-    public $selectedCustomer = null;
-    public $customers = [];
-
-    // Items
-    public $items = [];
-    public $products = [];
-
-    // Payment
-    public $payment_method = 'cash';
-    public $payment_status = 'due';
-    public $due_date;
-    public $amount_paid = 0;
-
-    protected $rules = [
-        'invoice_no' => 'required|unique:invoices,invoice_no,' . ':invoice.id',
-        'invoice_date' => 'required|date',
-        'status' => 'required|in:draft,sent,paid,overdue',
-        'notes' => 'nullable|string',
-        'items' => 'required|array|min:1',
-        'items.*.product_id' => 'required|exists:products,id',
-        'items.*.quantity' => 'required|numeric|min:0.01',
-        'items.*.price' => 'required|numeric|min:0',
-        'items.*.discount' => 'nullable|numeric|min:0',
-        'payment_method' => 'required|in:cash,card,bank,upi,mixed',
-        'payment_status' => 'required|in:paid,partial,due',
-        'due_date' => 'required|date|after_or_equal:invoice_date',
-        'amount_paid' => 'required|numeric|min:0'
-    ];
-
-    // Computed properties for dynamic totals
-    public function getSubtotalProperty()
+    public $invoice, $invoiceId;
+    public function mount($invoice)
     {
-        return collect($this->items)->sum(function ($item) {
-            return ($item['quantity'] ?? 0) * ($item['price'] ?? 0);
-        });
-    }
-
-    public function getDiscountProperty()
-    {
-        return collect($this->items)->sum('discount') ?? 0;
-    }
-
-    public function getTaxProperty()
-    {
-        return ($this->subtotal - $this->discount) * 0.18;
-    }
-
-    public function getTotalProperty()
-    {
-        return ($this->subtotal - $this->discount) + $this->tax;
-    }
-
-    public function getAmountDueProperty()
-    {
-        return $this->total - $this->amount_paid;
-    }
-
-    public function mount(Invoice $invoice)
-    {
-        $this->invoice = $invoice;
-        $this->loadInvoiceData();
+        $this->invoiceId = $invoice;
+        $this->invoice = Invoice::with(['items', 'customer'])->findOrFail($this->invoiceId);
         $this->products = Product::all();
-    }
 
-    protected function loadInvoiceData()
-    {
-        // Basic invoice info
-        $this->invoice_no = $this->invoice->invoice_no;
+        // Initialize form fields with existing invoice data
+        $this->status = $this->invoice->status;
+        $this->notes = $this->invoice->notes;
+        $this->subtotal = $this->invoice->subtotal;
+        $this->tax = $this->invoice->tax;
+        $this->total = $this->invoice->total;
+        $this->discount_amount = $this->invoice->discount_amount;
+        $this->total_discount = $this->invoice->discount;
+        $this->selectedCustomer = $this->invoice->customer_id;
 
-        // Handle invoice_date - safely format if exists, otherwise use today
-        $this->invoice_date = $this->invoice->invoice_date
-            ? $this->invoice->invoice_date->format('Y-m-d')
-            : now()->format('Y-m-d');
 
-        $this->status = $this->invoice->status ?? 'draft';
-        $this->notes = $this->invoice->notes ?? '';
-
-        // Customer
-        if ($this->invoice->customer) {
-            $this->selectedCustomer = $this->invoice->customer;
-        }
-
-        // Items - with null check
+        // Initialize items from existing invoice
         $this->items = $this->invoice->items->map(function ($item) {
             return [
-                'id' => $item->id,
                 'product_id' => $item->product_id,
-                'description' => $item->description ?? '',
-                'quantity' => $item->quantity ?? 1,
-                'price' => $item->price ?? 0,
-                'discount' => $item->discount ?? 0,
-                'unit' => $item->unit ?? 'piece'
+                'name' => $item->product->name ?? '', // fallback if product missing
+                'description' => $item->product->description ?? '',
+                'total' => $item->total,
             ];
         })->toArray();
 
-        // Payment info with null checks
-        $this->payment_method = $this->invoice->payment_method ?? 'cash';
-        $this->payment_status = $this->invoice->payment_status ?? 'due';
 
-        // Handle due_date safely
-        $this->due_date = $this->invoice->due_date
-            ? $this->invoice->due_date->format('Y-m-d')
-            : now()->addDays(30)->format('Y-m-d');
 
-        $this->amount_paid = $this->invoice->amount_paid ?? 0;
-    }
-
-    public function updatedCustomerSearch($value)
-    {
-        if (strlen($value) < 2) {
-            $this->customers = [];
-            return;
-        }
-
-        $this->customers = Customer::where('name', 'like', "%{$value}%")
-            ->orWhere('email', 'like', "%{$value}%")
-            ->limit(5)
-            ->get();
-    }
-
-    public function selectCustomer($customerId)
-    {
-        $this->selectedCustomer = Customer::find($customerId);
-        $this->customerSearch = $this->selectedCustomer->name;
-        $this->customers = [];
-    }
-
-    public function clearCustomer()
-    {
-        $this->selectedCustomer = null;
-        $this->customerSearch = '';
     }
 
     public function addItem()
     {
         $this->items[] = [
-            'product_id' => '',
+            'product_id' => null,
             'description' => '',
+            'mrp' => 0,
             'quantity' => 1,
-            'price' => 0,
+            'unit' => 'piece',
             'discount' => 0,
-            'unit' => 'piece'
+            'discount_amount' => 0,
+            'sell_price' => 0,
+            'total' => 0,
         ];
+    }
+
+    public function productSelected($index)
+    {
+        $productId = $this->items[$index]['product_id'] ?? null;
+        if (!$productId)
+            return;
+
+        foreach ($this->items as $i => $item) {
+            if ($i !== (int) $index && $item['product_id'] == $productId) {
+                $this->dispatchBrowserEvent('duplicate-product', ['message' => 'This product is already selected in another row.']);
+                $this->items[$index]['product_id'] = null;
+                return;
+            }
+        }
+
+        $product = Product::find($productId);
+        if ($product) {
+            $this->items[$index]['mrp'] = $product->mrp;
+            $this->items[$index]['unit'] = $product->unit ?? 'piece';
+            $this->items[$index]['description'] = $product->description ?? '';
+        }
+
+        $this->calculateItemTotal($index);
+        $this->calculateSummary();
+    }
+
+    public function moveItemUp($index)
+    {
+        if ($index > 0) {
+            [$this->items[$index], $this->items[$index - 1]] = [$this->items[$index - 1], $this->items[$index]];
+        }
+    }
+
+    public function moveItemDown($index)
+    {
+        if ($index < count($this->items) - 1) {
+            [$this->items[$index], $this->items[$index + 1]] = [$this->items[$index + 1], $this->items[$index]];
+        }
+    }
+
+    public function updatedItems($value, $key)
+    {
+        [$index, $field] = explode('.', $key);
+        $item = &$this->items[$index];
+
+        if (isset($item['product_id']) && $field === 'product_id') {
+            $product = Product::find($item['product_id']);
+            if ($product) {
+                $item['mrp'] = $product->mrp;
+                $item['sell_price'] = $product->sell_price;
+                $item['discount_amount'] = ($product->mrp - $product->sell_price);
+                $item['discount'] = round((($product->mrp - $product->sell_price) / $product->mrp) * 100, 2);
+            }
+        }
+
+        $this->calculateItemTotal($index);
+        $this->calculateSummary();
+    }
+
+    public function calculateItemTotal($index)
+    {
+        $item = &$this->items[$index];
+        $discountAmount = ($item['mrp'] * $item['discount']) / 100;
+        $item['discount_amount'] = round($discountAmount * $item['quantity'], 2);
+        $netPrice = $item['mrp'] - $discountAmount;
+        $item['total'] = round($netPrice * $item['quantity'], 2);
+    }
+
+    public function calculateSummary()
+    {
+        $this->subtotal = collect($this->items)->sum(fn($item) => $item['total']);
+        $this->total_discount = collect($this->items)->sum(fn($item) => $item['discount_amount']);
+        $this->tax = round($this->subtotal * $this->taxRate, 2);
+        $this->total = round($this->subtotal + $this->tax, 2);
     }
 
     public function removeItem($index)
     {
         unset($this->items[$index]);
         $this->items = array_values($this->items);
+        $this->calculateSummary();
     }
 
-    public function updatedItems($value, $key)
+    public function duplicateItem($index)
     {
-        $parts = explode('.', $key);
-
-        if (count($parts) === 3 && $parts[2] === 'product_id') {
-            $index = $parts[1];
-            $product = Product::find($value);
-
-            if ($product) {
-                $this->items[$index]['price'] = $product->price;
-                $this->items[$index]['description'] = $product->description;
-            }
-        }
-    }
-
-    public function updated($propertyName)
-    {
-        // Recalculate when amount paid changes
-        if ($propertyName === 'amount_paid') {
-            return;
-        }
-
-        // Recalculate when any item property changes
-        if (str_starts_with($propertyName, 'items.')) {
-            return;
-        }
+        $this->items = array_merge(
+            array_slice($this->items, 0, $index + 1),
+            [$this->items[$index]],
+            array_slice($this->items, $index + 1)
+        );
     }
 
     public function updateInvoice()
     {
-        $this->validate();
-
-        // Update invoice
-        $this->invoice->update([
-            'invoice_no' => $this->invoice_no,
-            'invoice_date' => $this->invoice_date,
-            'due_date' => $this->due_date,
-            'status' => $this->status,
-            'notes' => $this->notes,
-            'customer_id' => $this->selectedCustomer?->id,
-            'subtotal' => $this->subtotal,
-            'tax' => $this->tax,
-            'discount' => $this->discount,
-            'total' => $this->total,
-            'payment_method' => $this->payment_method,
-            'payment_status' => $this->payment_status,
-            'amount_paid' => $this->amount_paid
-        ]);
-
-        // Sync items
-        $existingIds = [];
-        foreach ($this->items as $item) {
-            $itemData = [
-                'product_id' => $item['product_id'],
-                'description' => $item['description'],
-                'quantity' => $item['quantity'],
-                'price' => $item['price'],
-                'discount' => $item['discount'],
-                'unit' => $item['unit'],
-                'total' => ($item['quantity'] * $item['price']) - $item['discount']
-            ];
-
-            if (isset($item['id'])) {
-                $this->invoice->items()->where('id', $item['id'])->update($itemData);
-                $existingIds[] = $item['id'];
-            } else {
-                $newItem = $this->invoice->items()->create($itemData);
-                $existingIds[] = $newItem->id;
-            }
-        }
-
-        // Delete removed items
-        $this->invoice->items()->whereNotIn('id', $existingIds)->delete();
-
-        session()->flash('message', 'Invoice updated successfully!');
-        return redirect()->route('invoices.show', $this->invoice);
+        dd('updating Invoice');
     }
 
     public function render()
     {
-        return view('livewire.invoice.edit-invoice', [
-            'subtotal' => $this->subtotal,
-            'tax' => $this->tax,
-            'discount' => $this->discount,
-            'total' => $this->total,
-            'amount_due' => $this->amount_due
-        ]);
+        return view('livewire.invoice.edit-invoice');
     }
 }

@@ -1,266 +1,379 @@
-<div class="min-h-screen bg-gray-50 py-8 px-4">
-    <div class="max-w-7xl mx-auto">
-        <!-- Header Section -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-800">Edit Invoice</h1>
-                <p class="text-sm text-gray-500">Update invoice details and items</p>
-            </div>
-            <div class="flex gap-3">
-                <button class="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50">
-                    Preview
-                </button>
-                <button wire:click="updateInvoice" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                    Save Changes
-                </button>
-            </div>
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 underline">Edit Invoice ({{ $invoiceId }})</h1>
         </div>
-
-        <!-- Main Content -->
-        <div class="bg-white shadow rounded-lg overflow-hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-0">
-                <!-- Left Column - Form -->
-                <div class="lg:col-span-2 p-6">
-                    <form wire:submit.prevent="updateInvoice">
-                        <!-- Invoice Header -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Invoice Number</label>
-                                <input type="text" wire:model.lazy="invoice_no" 
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                @error('invoice_no') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Invoice Date</label>
-                                <input type="date" wire:model.lazy="invoice_date"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                @error('invoice_date') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                                <select wire:model.lazy="status"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="draft">Draft</option>
-                                    <option value="sent">Sent</option>
-                                    <option value="paid">Paid</option>
-                                    <option value="overdue">Overdue</option>
-                                </select>
-                                @error('status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                        </div>
-
-                        <!-- Customer Section -->
-                        <div class="mb-6">
-                            <div class="flex justify-between items-center mb-2">
-                                <h3 class="text-lg font-medium text-gray-800">Customer</h3>
-                                <button type="button" class="text-sm text-blue-600 hover:text-blue-800">
-                                    + Add New Customer
-                                </button>
-                            </div>
-                            <div class="relative">
-                                <input type="text" wire:model.live.debounce.300ms="customerSearch"
-                                    placeholder="Search customer..."
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                
-                                @if($customerSearch && !$selectedCustomer)
-                                <div class="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-300 max-h-60 overflow-auto">
-                                    @forelse($customers as $customer)
-                                        <div wire:click="selectCustomer({{ $customer->id }})" 
-                                            class="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                                            <div class="font-medium">{{ $customer->name }}</div>
-                                            <div class="text-sm text-gray-500">{{ $customer->email }}</div>
-                                        </div>
-                                    @empty
-                                        <div class="px-4 py-2 text-gray-500">No customers found</div>
-                                    @endforelse
+        <div class="lg:col-span-2 p-6 md:p-8">
+            <form wire:submit.prevent="updateInvoice" class="space-y-6">
+                @csrf
+                <!-- Invoice Header Section -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <!-- Invoice Details Column -->
+                        <div class="md:w-1/2">
+                            <div class="bg-white border border-blue-100 rounded-xl p-6 shadow-sm space-y-6">
+                                <!-- Header -->
+                                <div class="border-b border-gray-300 pb-2">
+                                    <h2 class="text-xl font-bold text-gray-800 tracking-tight">Invoice Details</h2>
                                 </div>
-                                @endif
-                            </div>
-                            
-                            @if($selectedCustomer)
-                            <div class="mt-3 p-3 bg-blue-50 rounded-md border border-blue-100">
-                                <div class="flex justify-between">
-                                    <div>
-                                        <h4 class="font-medium">{{ $selectedCustomer->name }}</h4>
-                                        <p class="text-sm text-gray-600">{{ $selectedCustomer->email }}</p>
-                                        <p class="text-sm text-gray-600">{{ $selectedCustomer->phone }}</p>
+
+                                <!-- Form Grid -->
+                                <div class="space-y-5">
+                                    <!-- Invoice Number -->
+                                    <div class="flex items-center justify-between">
+                                        <label class="text-sm font-medium text-gray-700">Invoice #</label>
+                                        <input type="text"  value="{{ $invoice->invoice_no }}" readonly
+                                            class="w-44 text-right px-3 py-2 border border-gray-300 rounded-md bg-gray-50 font-mono text-sm focus:outline-none">
                                     </div>
-                                    <button wire:click="clearCustomer" type="button" class="text-gray-400 hover:text-red-500">
-                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
+
+                                    <!-- Invoice Date -->
+                                    <div class="flex items-center justify-between">
+                                        <label class="text-sm font-medium text-gray-700">Date</label>
+                                        <input type="date" readonly value="{{ $invoice->created_at->format('Y-m-d') }}"
+                                            class="w-44 px-3 text-center py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                    </div>
+
+                                    <!-- Status Selector -->
+                                    <div class="flex items-center justify-between">
+                                        <label class="text-sm font-medium text-gray-700">Status</label>
+                                        <select wire:model="status"
+                                            class="w-44 px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                            <option value="draft">Draft</option>
+                                            <option value="sent">Sent</option>
+                                            <option value="accepted">Accepted</option>
+                                            <option value="rejected">Rejected</option>
+                                            <option value="cancelled">Cancelled</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                            @endif
                         </div>
-
-                        <!-- Items Section -->
-                        <div class="mb-6">
-                            <div class="flex justify-between items-center mb-2">
-                                <h3 class="text-lg font-medium text-gray-800">Items</h3>
-                                <button type="button" wire:click="addItem" 
-                                    class="text-sm text-blue-600 hover:text-blue-800">
-                                    + Add Item
-                                </button>
-                            </div>
-                            
-                            <div class="space-y-4">
-                                @foreach($items as $index => $item)
-                                <div wire:key="item-{{ $index }}" class="border rounded-md p-4">
-                                    <div class="flex justify-between items-start mb-3">
-                                        <div class="w-full">
-                                            <select wire:model="items.{{ $index }}.product_id" 
-                                            wire:change="updateItemPrice({{ $index }})"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="">Select Product</option>
-                                        @foreach($products as $product)
-                                            <option value="{{ $product->id }}">{{ $product->name }}</option>
-                                        @endforeach
-                                    </select>
-                                            @error('items.'.$index.'.product_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                                        </div>
-                                        <button wire:click="removeItem({{ $index }})" 
-                                            class="ml-2 text-gray-400 hover:text-red-500">
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <!-- Business Info Column -->
+                        <div class="md:w-1/2">
+                            <div
+                                class="h-full flex flex-col justify-between bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-xl p-6 shadow-sm">
+                                <div class="flex  gap-5">
+                                    <!-- Logo Area -->
+                                    <div class="flex-shrink-0">
+                                        <div
+                                            class="w-20 h-20 bg-white rounded-xl border-2 border-blue-300 flex items-center justify-center shadow-md">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
                                             </svg>
-                                        </button>
-                                    </div>
-                                    
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                        <div>
-                                            <label class="block text-xs text-gray-500 mb-1">Quantity</label>
-                                            <input type="number" wire:model.lazy="items.{{ $index }}.quantity" wire:change="calculateTotals"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                            @error('items.'.$index.'.quantity') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs text-gray-500 mb-1">Price</label>
-                                            <input type="number" wire:model.lazy="items.{{ $index }}.price" wire:change="calculateTotals"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                            @error('items.'.$index.'.price') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs text-gray-500 mb-1">Discount</label>
-                                            <input type="number" wire:model.lazy="items.{{ $index }}.discount" wire:change="calculateTotals"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                            @error('items.'.$index.'.discount') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                         </div>
                                     </div>
-                                    
-                                    <div class="mt-3">
-                                        <label class="block text-xs text-gray-500 mb-1">Description</label>
-                                        <textarea wire:model.lazy="items.{{ $index }}.description" rows="2"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                                    </div>
-                                    
-                                    <div class="mt-2 text-right font-medium">
-                                        Item Total: ₹{{ number_format(($item['quantity'] * $item['price']) - $item['discount'], 2) }}
+
+                                    <!-- Business Info -->
+                                    <div class="flex-1">
+                                        <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                                            TechBazar
+                                            <span
+                                                class="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Your
+                                                Business</span>
+                                        </h3>
+
+                                        <div class="mt-2 space-y-1">
+                                            <div class="flex items-start">
+                                                <svg class="flex-shrink-0 h-4 w-4 text-gray-500 mt-0.5" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                </svg>
+                                                <span class="ml-2 text-sm text-gray-600">123 Business Street, Purnea,
+                                                    Bihar 854301</span>
+                                            </div>
+
+                                            <div class="flex items-center">
+                                                <svg class="flex-shrink-0 h-4 w-4 text-gray-500" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                                </svg>
+                                                <span class="ml-2 text-sm text-gray-600">+91 8227046826</span>
+                                            </div>
+
+                                            <div class="flex items-center">
+                                                <svg class="flex-shrink-0 h-4 w-4 text-gray-500" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                </svg>
+                                                <span
+                                                    class="ml-2 text-sm text-gray-600">contact@techbazar.example</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-3 flex items-center">
+                                            <svg class="flex-shrink-0 h-4 w-4 text-gray-500" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                            </svg>
+                                            <span
+                                                class="ml-2 text-xs font-medium text-gray-700 bg-blue-50 px-2 py-1 rounded">GSTIN:
+                                                22ABCDE1234F1Z5</span>
+                                        </div>
                                     </div>
                                 </div>
-                                @endforeach
                             </div>
-                            @error('items') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                         </div>
-
-                        <!-- Notes Section -->
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                            <textarea wire:model.lazy="notes" rows="3"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                        </div>
-                    </form>
+                    </div>
                 </div>
-
-                <!-- Right Column - Summary -->
-                <div class="bg-gray-50 p-6 border-l">
-                    <!-- Company Info -->
-                    <div class="mb-6">
-                        <div class="flex items-center mb-3">
-                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                <!-- Customer Section -->
+                <div class="space-y-6">
+                    <!-- Customer Information Card -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                        <!-- Card Header -->
+                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-6 py-4 border-b border-blue-200">
+                            <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 mr-2"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path
+                                        d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                                 </svg>
-                            </div>
-                            <h3 class="text-lg font-medium">Your Business</h3>
+                                Customer Information
+                            </h3>
                         </div>
-                        <div class="text-sm text-gray-600 space-y-1">
-                            <p>123 Business Street</p>
-                            <p>Purnea, Bihar 854334</p>
-                            <p>GSTIN: 22ABCDE1234F1Z5</p>
-                            <p>Phone: +91 9876543210</p>
-                        </div>
-                    </div>
 
-                    <!-- Payment Details -->
-                    <div class="mb-6">
-                        <h3 class="text-lg font-medium mb-3">Payment Details</h3>
-                        <div class="space-y-3">
-                            <div>
-                                <label class="block text-sm text-gray-500 mb-1">Payment Method</label>
-                                <select wire:model.lazy="payment_method"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="cash">Cash</option>
-                                    <option value="card">Credit Card</option>
-                                    <option value="bank">Bank Transfer</option>
-                                    <option value="upi">UPI</option>
-                                </select>
-                                @error('payment_method') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm text-gray-500 mb-1">Payment Status</label>
-                                <select wire:model.lazy="payment_status"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="paid">Paid</option>
-                                    <option value="partial">Partial</option>
-                                    <option value="due">Due</option>
-                                </select>
-                                @error('payment_status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm text-gray-500 mb-1">Due Date</label>
-                                <input type="date" wire:model.lazy="due_date"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                @error('due_date') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm text-gray-500 mb-1">Amount Paid</label>
-                                <input type="number" wire:model.lazy="amount_paid" wire:change="calculateTotals"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                @error('amount_paid') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                        </div>
-                    </div>
+                        <!-- Card Body -->
+                        <div
+                            class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Column 1 -->
+                                <div class="space-y-3">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Name</p>
+                                        <p class="text-gray-800 dark:text-gray-100 font-medium">
+                                            {{ $invoice->customer->name }}
+                                        </p>
+                                    </div>
 
-                    <!-- Summary -->
-                    <div class="border-t pt-4">
-                        <h3 class="text-lg font-medium mb-3">Summary</h3>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Subtotal:</span>
-                                <span>₹{{ number_format($subtotal, 2) }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Tax (18%):</span>
-                                <span>₹{{ number_format($tax, 2) }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Discount:</span>
-                                <span>-₹{{ number_format($discount, 2) }}</span>
-                            </div>
-                            <div class="flex justify-between font-medium text-base pt-2 border-t">
-                                <span>Total:</span>
-                                <span>₹{{ number_format($total, 2) }}</span>
-                            </div>
-                            <div class="flex justify-between text-blue-600 pt-1">
-                                <span>Amount Due:</span>
-                                <span>₹{{ number_format($amount_due, 2) }}</span>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Contact</p>
+                                        <p class="text-gray-800 dark:text-gray-100 font-medium">
+                                            {{ $invoice->customer->contact }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Column 2 -->
+                                <div class="space-y-3">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Email</p>
+                                        <p class="text-gray-800 dark:text-gray-100 font-medium">
+                                            {{ $invoice->customer->email }}
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Address</p>
+                                        <p class="text-gray-800 dark:text-gray-100 font-medium">
+                                            {{ $invoice->customer->address->address }}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+               <!-- Products Section -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Products & Services</h3>
+
+                    @foreach($items as $index => $item)
+                        <div wire:key="item-{{ $index }}"
+                            class="border border-gray-300 rounded-xl p-4 bg-white shadow-sm relative">
+
+                            <!-- Up/Down/Delete Buttons -->
+                            <div class="absolute left-2 top-4 flex flex-col space-y-2">
+                                <button type="button" wire:click="moveItemUp({{ $index }})"
+                                    class="text-blue-500 hover:text-blue-700">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 15l7-7 7 7" />
+                                    </svg>
+                                </button>
+                                <button type="button" wire:click="moveItemDown({{ $index }})"
+                                    class="text-blue-500 hover:text-blue-700">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <button type="button" wire:click="removeItem({{ $index }})"
+                                    class="text-red-500 hover:text-red-700">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Product Form Layout -->
+                            <div class="md:grid md:grid-cols-2 md:gap-6 pl-10">
+                                <!-- Left Section -->
+                                <div class="space-y-1">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Item</label>
+                                        <select wire:model.live="items.{{ $index }}.product_id"
+                                            wire:change="productSelected({{ $index }})"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                            <option value="">Select Product</option>
+                                            @foreach ($products as $product)
+                                                <option value="{{ $product->id }}"
+                                                    @if(collect($items)->pluck('product_id')->contains($product->id) && $items[$index]['product_id'] != $product->id) disabled @endif>
+                                                    {{ $product->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('items.' . $index . '.product_id')
+                                            <p class="text-red-500 font-semibold">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                        <textarea wire:model="items.{{ $index }}.description"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm h-20"
+                                            placeholder="Description..."></textarea>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">MRP</label>
+                                        <input type="number" wire:model="items.{{ $index }}.mrp"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                            placeholder="Enter MRP">
+                                    </div>
+                                </div>
+
+                                <!-- Right Section -->
+                                <div class="space-y-1 mt-4 md:mt-0">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                                        <input type="number" wire:model.lazy="items.{{ $index }}.quantity"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                            placeholder="Quantity">
+                                        @error('items.' . $index . '.quantity')
+                                            <p class="text-red-500 font-semibold">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Item Discount
+                                            (%)</label>
+                                        <input type="text" wire:model="items.{{ $index }}.discount_percent"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                            placeholder="%">
+                                    </div>
+
+
+                                    <!-- Calculated Totals -->
+                                    <div class="text-right pt-2">
+                                        <p class="text-xs text-gray-600">Discount:
+                                            ₹{{ number_format($item['discount_amount'] ?? 0, 2) }}</p>
+                                        <p class="text-sm font-medium text-gray-800">Total:
+                                            ₹{{ number_format($item['total'] ?? 0, 2) }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+
+                    <button type="button" wire:click="addItem"
+                        class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 py-2 px-4 rounded-lg border border-blue-200 text-sm font-medium transition">
+                        + Add Product
+                    </button>
+                </div>
+
+
+                <!-- Notes -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                    <textarea wire:model="notes" rows="3"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+
+                <!-- Summary -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-5">📊 Summary</h3>
+
+                    <div class="space-y-4 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Subtotal</span>
+                            <span class="font-medium text-gray-700">₹{{ number_format($subtotal, 2) }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Discount</span>
+                            <span class="font-medium text-green-600">₹{{ number_format($total_discount, 2) }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Tax <span class="text-xs text-gray-400">(18%)</span></span>
+                            <span class="font-medium text-orange-600">₹{{ number_format($tax, 2) }}</span>
+                        </div>
+
+                        <div class="flex justify-between border-t border-gray-100 pt-4 text-base">
+                            <span class="font-semibold text-gray-800">Total</span>
+                            <span class="font-bold text-blue-600 text-lg">₹{{ number_format($total, 2) }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button"
+                class="w-full text-white font-semibold bg-green-600 p-2 rounded text-xl">
+                update Invoice
+            </button>
+            
+            <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+            
+            <script>
+                document.getElementById('rzp-button').addEventListener('click', function (e) {
+                    e.preventDefault();
+            
+                    let amount = @this.amount_paid;
+            
+                    // ✅ IF amount is zero, skip Razorpay and directly create invoice
+                    if (!amount || amount == 0) {
+                        if (confirm("Amount is ₹0. Proceed without payment?")) {
+                            @this.call('createInvoice');
+                        }
+                        return;
+                    }
+            
+                    // ✅ ELSE use Razorpay
+                    var options = {
+                        "key": "{{ env('RAZORPAY_KEY') }}",
+                        "amount": amount * 100, // amount in paise
+                        "currency": "INR",
+                        "name": "Invoice Payment",
+                        "description": "Sales Invoice",
+                        "handler": function (response) {
+                            @this.call('processPaymentAndCreateInvoice',
+                                response.razorpay_payment_id,
+                                response.razorpay_order_id,
+                                response.razorpay_signature
+                            );
+                        },
+                        "prefill": {
+                            "name": "{{ Auth::user()->name ?? 'Guest' }}",
+                            "email": "{{ Auth::user()->email ?? 'email@example.com' }}"
+                        },
+                        "theme": {
+                            "color": "#28a745"
+                        }
+                    };
+            
+                    var rzp1 = new Razorpay(options);
+                    rzp1.open();
+                });
+            </script>
+            </form>
         </div>
     </div>
 </div>

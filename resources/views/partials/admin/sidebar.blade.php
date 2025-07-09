@@ -1,4 +1,4 @@
-<div class="sidebar bg-dark-800 text-white h-full fixed md:relative flex  flex-col z-20" id="sidebar">
+<div class="sidebar bg-dark-800 text-white h-screen fixed md:relative flex  flex-col z-20" id="sidebar">
     <!-- Logo/Brand - Now with lock functionality -->
     <div class="p-4 flex items-center justify-center md:justify-start border-b border-gray-700/50 logo-container"
         id="logo-container">
@@ -23,7 +23,7 @@
                 <i class="fas fa-chevron-down text-xs sidebar-text dropdown-icon transition-transform"></i>
             </div>
             <div class="mt-2 ml-8 pl-2 border-l border-gray-700/50 space-y-1 dropdown-content hidden">
-                <x-sidebar-link href="{{route('admin.dashboard')}}" icon="fas fa-circle" active="admin.dashboard">
+                <x-sidebar-link wire:navigate href="{{route('admin.dashboard')}}" icon="fas fa-circle" active="admin.dashboard">
                     Sales Summary
                 </x-sidebar-link>
                 <a href="#" class="sidebar-item flex items-center py-2 px-2 rounded text-sm">
@@ -48,7 +48,7 @@
                 <i class="fas fa-chevron-down text-xs sidebar-text dropdown-icon transition-transform"></i>
             </div>
             <div class="mt-2 ml-8 pl-2 border-l border-gray-700/50 space-y-1 dropdown-content hidden">
-                <x-sidebar-link href="{{route('admin.sales')}}" icon="fas fa-circle" active="admin.sales">
+                <x-sidebar-link wire:navigate href="{{route('admin.sales')}}" icon="fas fa-circle" active="admin.sales">
                     Top Selling
                 </x-sidebar-link>
                 <a href="#" class="sidebar-item flex items-center py-2 px-2 rounded text-sm">
@@ -258,15 +258,3 @@
         </div>
     </div>
 </div>
-<style>
-    .scrollable-container {
-      overflow-y: auto; /* Enables vertical scrolling when needed */
-      scrollbar-width: none; /* For Firefox */
-      -ms-overflow-style: none; /* For IE and Edge */
-    }
-    
-    /* For WebKit browsers (Chrome, Safari) */
-    .scrollable-container::-webkit-scrollbar {
-      display: none;
-    }
- </style>

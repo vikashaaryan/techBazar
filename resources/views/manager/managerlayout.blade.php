@@ -39,7 +39,7 @@
         <!-- Main Content -->
         <main 
             class="flex-1 p-6 transition-all duration-300 ease-in-out"
-            :class="sidebarOpen ? 'ml-[18%]' : 'ml-20'"
+            :class="sidebarOpen ? 'ml-[15%]' : 'ml-20'"
         >
             <div class="bg-[#F4EEFF] rounded-lg shadow-sm p-2">
                 @section('content')

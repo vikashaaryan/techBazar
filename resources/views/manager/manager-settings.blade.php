@@ -18,7 +18,7 @@
                     <img src="https://ui-avatars.com/api/?name=John+Doe&background=random" 
                         class="w-24 h-24 rounded-full border-4 border-white shadow-md" alt="Profile">
                 </div>
-                <h2 class="mt-2 text-lg font-medium">John Doe</h2>
+                <h2 class="mt-2 text-lg font-medium">{{$manager->user_id}}</h2>
             </div>
 
             <!-- Settings Form -->

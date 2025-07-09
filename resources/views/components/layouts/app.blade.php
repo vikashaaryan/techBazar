@@ -35,7 +35,7 @@
 <body class="bg-white" x-data="app" x-init="init()">
     @include('manager.components.navbar')
 
-    <div class="flex pt-16">
+    <div class="flex ">
         <!-- Sidebar -->
         @include('manager.components.sidebar')
         
