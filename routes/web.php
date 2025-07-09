@@ -4,6 +4,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ManagerController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
@@ -16,7 +17,10 @@ use App\Livewire\Admin\ManageSales;
 use App\Livewire\Admin\ManageStaff;
 use App\Livewire\Admin\Sales;
 use App\Livewire\CreateQuotation;
+use App\Livewire\Exchange\EditExchange;
 use App\Livewire\Exchange\Exchange;
+use App\Livewire\Exchange\ExchangeDetail;
+use App\Livewire\Exchange\ExchangeForm;
 use App\Livewire\Exchange\ViewExchange;
 use App\Livewire\Invoice\CreateInvoice;
 use App\Livewire\Invoice\EditInvoice;
@@ -54,7 +58,10 @@ Route::group(['middleware' => ['auth', 'role:staff|admin']], function () {
     Route::get('/invoice/create', CreateInvoice::class)->name('createInvoice');
     Route::get('/invoices', ShowInvoice::class)->name('showInvoice');
     Route::get('/view-exchange', ViewExchange::class)->name('exchange.view');
-    Route::get('/create-exchange', Exchange::class)->name('exchange.create');
+    Route::get('/exchange/create', ExchangeForm::class)->name('exchange.create');
+    Route::get('/exchange/{exchange}/edit',EditExchange::class)->name('exchange.edit');
+    // routes/web.php
+    Route::get('/exchange/{exchange}/detail', ExchangeDetail::class)->name('exchange.detail');
 
     Route::get('/invoices/{invoice}/edit', function (Invoice $invoice) {
         return app()->call(EditInvoice::class, [
@@ -68,6 +75,11 @@ Route::group(['middleware' => ['auth', 'role:staff|admin']], function () {
     Route::get('/generate-pdf/{id}', [PdfController::class, 'genratePdf'])->name('generate.pdf');
     Route::get('/download-pdf/{id}', [PdfController::class, 'downloadPdf'])
         ->name('downloadPdf');
+    //payments records
+    Route::get('payment/enter-payment',[PaymentController::class, 'enterpayment'])->name('enter.payment');
+    Route::post('payment/enter-payment', [PaymentController::class, 'storePayment'])->name('manager.payments.store');
+       
+    Route::get('/payments/records', [PaymentController::class, 'records'])->name('payments.records');
 
     // manager-setting 
     Route::get('manager/setting',[ManagerController::class, 'managerSetting'])->name('manager.setting');

@@ -90,14 +90,18 @@ class PurchaseController extends Controller
                 'payment_status' => $validated['payment_status'],
             ]);
 
-            // Add purchase items
+            // Add purchase items and update product quantities
             foreach ($validated['items'] as $item) {
-                $purchase->items()->create([
+                $purchaseItem = $purchase->items()->create([
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
                     'total' => $item['quantity'] * $item['price'],
                 ]);
+
+                // Update product quantity
+                $product = Product::find($item['product_id']);
+                $product->increment('qty', $item['quantity']);
             }
 
             // Handle file attachment
@@ -112,10 +116,12 @@ class PurchaseController extends Controller
                 ->with('success', 'Purchase created successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Purchase creation failed: ' . $e->getMessage());
             return back()->withInput()
                 ->with('error', 'Error creating purchase: ' . $e->getMessage());
         }
     }
+
     public function show($id)
     {
         $purchase = Purchase::with(['supplier', 'items.product'])->findOrFail($id);
@@ -146,6 +152,7 @@ class PurchaseController extends Controller
 
         return view('manager.purchase.component.view-purchase', compact('purchase', 'supplierPurchases', 'productHistory'));
     }
+
     public function edit($id)
     {
         $purchase = Purchase::with('purchaseItems.product')->findOrFail($id);
@@ -154,6 +161,7 @@ class PurchaseController extends Controller
 
         return view('manager.purchase.component.edit-purchase', compact('purchase', 'suppliers', 'products'));
     }
+
     public function update(Request $request, Purchase $purchase)
     {
         // Validate the request
@@ -174,19 +182,25 @@ class PurchaseController extends Controller
         DB::beginTransaction();
 
         try {
+            // First, restore quantities from existing items
+            foreach ($purchase->items as $item) {
+                $product = Product::find($item->product_id);
+                $product->decrement('qty', $item->quantity);
+            }
+
             // Update the purchase
             $purchase->update([
                 'supplier_id' => $validated['supplier_id'],
-                'invoice_number' =>  $validated['invoice_number'],
+                'invoice_number' => $validated['invoice_number'],
                 'amount' => $validated['amount'],
                 'amount_paid' => $validated['amount_paid'],
                 'payment_status' => $validated['payment_status'],
             ]);
 
-            // Sync purchase items - first delete existing items
+            // Delete existing items
             $purchase->items()->delete();
 
-            // Add new purchase items
+            // Add new purchase items and update quantities
             foreach ($validated['items'] as $item) {
                 $purchase->items()->create([
                     'product_id' => $item['product_id'],
@@ -194,6 +208,10 @@ class PurchaseController extends Controller
                     'price' => $item['price'],
                     'total' => $item['quantity'] * $item['price'],
                 ]);
+
+                // Update product quantity
+                $product = Product::find($item['product_id']);
+                $product->increment('qty', $item['quantity']);
             }
 
             // Handle file attachment
@@ -213,9 +231,37 @@ class PurchaseController extends Controller
                 ->with('success', 'Purchase updated successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Purchase update failed: ' . $e->getMessage());
             return back()->withInput()
                 ->with('error', 'Error updating purchase: ' . $e->getMessage());
         }
     }
-    public function destroy($id) {}
+
+    public function destroy($id)
+    {
+        $purchase = Purchase::with('items')->findOrFail($id);
+
+        DB::beginTransaction();
+
+        try {
+            // Restore product quantities before deleting
+            foreach ($purchase->items as $item) {
+                $product = Product::find($item->product_id);
+                $product->decrement('qty', $item->quantity);
+            }
+
+            // Delete the purchase and its items
+            $purchase->items()->delete();
+            $purchase->delete();
+
+            DB::commit();
+
+            return redirect()->route('purchase.index')
+                ->with('success', 'Purchase deleted successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Purchase deletion failed: ' . $e->getMessage());
+            return back()->with('error', 'Error deleting purchase: ' . $e->getMessage());
+        }
+    }
 }

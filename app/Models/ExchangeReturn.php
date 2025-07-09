@@ -40,29 +40,30 @@ class ExchangeReturn extends Model
     {
         return $this->hasMany(ExchangeReturnItem::class);
     }
-
     public function customer()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(\App\Models\Customer::class, 'customer_id');
     }
 
+    // Supplier relationship (for purchase returns)
     public function supplier()
     {
-        return $this->belongsTo(Supplier::class);
+        return $this->belongsTo(\App\Models\Supplier::class, 'supplier_id');
     }
-
     public function sale()
     {
         return $this->belongsTo(Sales::class);
     }
-
     public function purchase()
     {
         return $this->belongsTo(Purchase::class);
     }
-
     public function processor()
     {
+        // Example if processor is a User model
         return $this->belongsTo(User::class, 'processed_by');
+
+        // Or if it's a different relationship type, adjust accordingly
     }
+
 }

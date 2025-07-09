@@ -25,6 +25,14 @@ class Customer extends Model
     {
         return $this->hasMany(Quote::class);
     }
+    public function scopeActive($query)
+    {
+        return $query->where('status', 1);
+    }
+    public function exchangeReturns()
+    {
+        return $this->hasMany(ExchangeReturn::class);
+    }
 
 
 }

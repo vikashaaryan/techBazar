@@ -11,4 +11,12 @@ class Supplier extends Model
     {
         return $this->hasOne(Address::class, "id", "address_id");
     }
+    public function scopeActive($query)
+    {
+        return $query->where('status', 1);
+    }
+    public function exchangeReturns()
+    {
+        return $this->hasMany(ExchangeReturn::class);
+    }
 }

@@ -565,7 +565,17 @@
             </script>
             
 
-
+            <script>
+                document.addEventListener('livewire:initialized', () => {
+                    Livewire.on('duplicate-product', (event) => {
+                        alert(event.message);
+                    });
+                    
+                    Livewire.on('notify', (event) => {
+                        alert(`${event.type}: ${event.message}`);
+                    });
+                });
+                </script>
 
             </form>
         </div>

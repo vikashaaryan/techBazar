@@ -289,7 +289,7 @@ staff panel
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                        <a href="{{ route('sales.show', $customerPurchase->id) }}" class="text-blue-600 hover:text-blue-900">View</a>
+                                        <a href="{{ route('manager.sales-history.show', $customerPurchase->id) }}" class="text-blue-600 hover:text-blue-900">View</a>
                                     </td>
                                 </tr>
                                 @endforeach

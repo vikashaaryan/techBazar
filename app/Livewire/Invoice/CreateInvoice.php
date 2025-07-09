@@ -9,6 +9,8 @@ use App\Models\Product;
 use App\Models\Sales;
 use App\Models\SalesItems;
 use Devrabiul\ToastMagic\Facades\ToastMagic;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Razorpay\Api\Api;
@@ -37,7 +39,7 @@ class CreateInvoice extends Component
             : '001';
 
         $this->invoice_no = $this->datePrefix . '-' . $this->newIncrement;
-        $this->products = Product::all();
+        $this->products = Product::where('qty', '>', 0)->get();
 
         $this->items = [[
             'product_id' => null,
@@ -49,6 +51,7 @@ class CreateInvoice extends Component
             'sell_price' => 0,
             'total' => 0,
             'discount_amount' => 0,
+            'available_qty' => 0,
         ]];
     }
 
@@ -84,6 +87,7 @@ class CreateInvoice extends Component
             'discount_amount' => 0,
             'sell_price' => 0,
             'total' => 0,
+            'available_qty' => 0,
         ];
     }
 
@@ -94,7 +98,10 @@ class CreateInvoice extends Component
 
         foreach ($this->items as $i => $item) {
             if ($i !== (int) $index && $item['product_id'] == $productId) {
-                $this->dispatchBrowserEvent('duplicate-product', ['message' => 'This product is already selected in another row.']);
+                $this->dispatch(
+                    'duplicate-product',
+                    message: 'This product is already selected in another row.'
+                );
                 $this->items[$index]['product_id'] = null;
                 return;
             }
@@ -102,9 +109,15 @@ class CreateInvoice extends Component
 
         $product = Product::find($productId);
         if ($product) {
-            $this->items[$index]['mrp'] = $product->mrp;
-            $this->items[$index]['unit'] = $product->unit ?? 'piece';
-            $this->items[$index]['description'] = $product->description ?? '';
+            $this->items[$index] = array_merge($this->items[$index], [
+                'mrp' => $product->mrp,
+                'unit' => $product->unit ?? 'piece',
+                'description' => $product->description ?? '',
+                'sell_price' => $product->sell_price,
+                'available_qty' => $product->qty,
+                'discount_amount' => ($product->mrp - $product->sell_price),
+                'discount' => round((($product->mrp - $product->sell_price) / $product->mrp) * 100, 2)
+            ]);
         }
 
         $this->calculateItemTotal($index);
@@ -130,13 +143,10 @@ class CreateInvoice extends Component
         [$index, $field] = explode('.', $key);
         $item = &$this->items[$index];
 
-        if (isset($item['product_id']) && $field === 'product_id') {
-            $product = Product::find($item['product_id']);
-            if ($product) {
-                $item['mrp'] = $product->mrp;
-                $item['sell_price'] = $product->sell_price;
-                $item['discount_amount'] = ($product->mrp - $product->sell_price);
-                $item['discount'] = round((($product->mrp - $product->sell_price) / $product->mrp) * 100, 2);
+        if ($field === 'quantity') {
+            if ($item['quantity'] > $item['available_qty']) {
+                $this->addError("items.$index.quantity", "Quantity exceeds available stock");
+                $item['quantity'] = $item['available_qty'];
             }
         }
 
@@ -184,9 +194,22 @@ class CreateInvoice extends Component
             'due_date' => 'nullable|date',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
-            'items.*.quantity' => 'required|numeric|min:1',
+            'items.*.quantity' => [
+                'required',
+                'numeric',
+                'min:1',
+                function ($attribute, $value, $fail) {
+                    $index = explode('.', $attribute)[1];
+                    $productId = $this->items[$index]['product_id'];
+                    $product = Product::find($productId);
+
+                    if ($product && $value > $product->qty) {
+                        $fail("Quantity exceeds available stock for {$product->name}");
+                    }
+                }
+            ],
             'items.*.mrp' => 'required|numeric|min:0',
-            'amount_paid' => 'required|numeric|min:0',
+            'amount_paid' => 'required|numeric|min:0|lte:total',
             'method' => 'required_if:payment_status,paid',
             'payment_status' => 'required',
         ];
@@ -196,66 +219,96 @@ class CreateInvoice extends Component
         'selectedCustomer.required' => 'Please select a customer.',
         'items.*.product_id.required' => 'Each item must have a selected product.',
         'items.*.quantity.required' => 'Quantity is required.',
+        'amount_paid.lte' => 'Amount paid cannot be greater than total amount',
     ];
 
     public function createInvoice()
     {
         $this->validate();
 
-        $customerId = $this->selectedCustomer?->id;
+        DB::beginTransaction();
 
-        $invoice = Invoice::create([
-            'invoice_no' => $this->invoice_no,
-            'customer_id' => $customerId,
-            'status' => $this->status,
-            'due_date' => $this->due_date,
-            'subtotal' => $this->subtotal,
-            'tax' => $this->tax,
-            'total' => $this->total,
-            'discount' => $this->total_discount,
-            'notes' => $this->notes,
-        ]);
+        try {
+            $customerId = $this->selectedCustomer?->id;
 
-        $sales = Sales::create([
-            'customer_id' => $customerId,
-            'invoice_id' => $invoice->id,
-            'payment_status' => $this->payment_status,
-            'discount' => $this->total_discount,
-            'tax' => $this->tax,
-            'total_amount' => $this->total,
-            'amount_paid' => $this->amount_paid,
-        ]);
-
-        foreach ($this->items as $item) {
-            SalesItems::create([
-                'sale_id' => $sales->id,
-                'product_id' => $item['product_id'],
-                'discount' => $item['discount_amount'],
-                'total' => $item['total'],
-                'qty' => $item['quantity'],
-                'invoice_id' => $invoice->id,
+            // Create invoice
+            $invoice = Invoice::create([
+                'invoice_no' => $this->invoice_no,
+                'customer_id' => $customerId,
+                'status' => $this->status,
+                'due_date' => $this->due_date,
+                'subtotal' => $this->subtotal,
+                'tax' => $this->tax,
+                'total' => $this->total,
+                'discount' => $this->total_discount,
+                'notes' => $this->notes,
             ]);
+
+            // Create sale
+            $sales = Sales::create([
+                'customer_id' => $customerId,
+                'invoice_id' => $invoice->id,
+                'payment_status' => $this->payment_status,
+                'discount' => $this->total_discount,
+                'tax' => $this->tax,
+                'total_amount' => $this->total,
+                'amount_paid' => $this->amount_paid,
+            ]);
+
+            // Process items and update stock
+            foreach ($this->items as $item) {
+                $product = Product::findOrFail($item['product_id']);
+
+                // Validate stock again (in case of race conditions)
+                if ($product->qty < $item['quantity']) {
+                    throw new \Exception("Insufficient stock for {$product->name}");
+                }
+
+                // Create sale item
+                SalesItems::create([
+                    'sale_id' => $sales->id,
+                    'product_id' => $item['product_id'],
+                    'discount' => $item['discount_amount'],
+                    'total' => $item['total'],
+                    'qty' => $item['quantity'],
+                    'invoice_id' => $invoice->id,
+                ]);
+
+                // Update product quantity
+                $product->decrement('qty', $item['quantity']);
+            }
+
+            // Create payment
+            Payment::create([
+                'invoice_id' => $invoice->id,
+                'customer_id' => $customerId,
+                'type' => 'customer',
+                'payment_for' => 'sell',
+                'sale_id' => $sales->id,
+                'method' => $this->method,
+                'amount' => $this->total,
+                'amount_paid' => $this->amount_paid,
+                'payment_status' => $this->payment_status,
+                'status' => 'captured',
+                'payment_id' => $this->razorpay_payment_id ?? null,
+                'order_id' => $this->razorpay_order_id ?? null,
+                'signature' => $this->razorpay_signature ?? null,
+            ]);
+
+            DB::commit();
+
+            ToastMagic::success('Invoice created successfully!');
+            return redirect('/invoices');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Invoice creation failed: ' . $e->getMessage());
+            $this->dispatch(
+                'notify',
+                type: 'error',
+                message: 'Error creating invoice: ' . $e->getMessage()
+            );
+            return back();
         }
-
-        Payment::create([
-            'invoice_id'     => $invoice->id,
-            'customer_id'    => $customerId,
-            'type'           => 'customer',
-            'payment_for'    => 'sell',
-            'sale_id'        => $sales->id,
-            'method'         => $this->method,
-            'amount'         => $this->amount_paid,
-            'amount_paid'    => $this->amount_paid,
-            'payment_status' => $this->payment_status,
-            'status'         => 'captured',
-
-            // Razorpay
-            'payment_id'     => $this->razorpay_payment_id ?? null,
-            'order_id'       => $this->razorpay_order_id ?? null,
-            'signature'      => $this->razorpay_signature ?? null,
-        ]);
-
-        return redirect('/invoices');
     }
 
     public function processPaymentAndCreateInvoice($razorpayPaymentId)
@@ -275,11 +328,15 @@ class CreateInvoice extends Component
             $this->razorpay_order_id = $payment->order_id ?? null;
             $this->razorpay_signature = request('razorpay_signature');
 
-            $this->createInvoice();
-            ToastMagic::success('Payment successful and invoice created');
-            return redirect('/invoices');
+            return $this->createInvoice();
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
+            Log::error('Razorpay payment failed: ' . $e->getMessage());
+            $this->dispatch(
+                'notify',
+                type: 'error',
+                message: 'Payment failed: ' . $e->getMessage()
+            );
+            return back();
         }
     }
 

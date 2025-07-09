@@ -18,6 +18,8 @@ return new class extends Migration
             // Relationships
             $table->foreignId('invoice_id')->constrained()->cascadeOnDelete();
             $table->foreignId('customer_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('recorded_by')->nullable();
+
 
             // Payment details
             $table->enum('type', ['customer', 'supplier'])->nullable();
@@ -30,6 +32,7 @@ return new class extends Migration
 
             // Amounts
             $table->decimal('amount', 10, 2)->nullable(); // In rupees
+            $table->date('payment_date')->nullable();
             $table->decimal('amount_paid', 10, 2)->nullable();
 
             // Status

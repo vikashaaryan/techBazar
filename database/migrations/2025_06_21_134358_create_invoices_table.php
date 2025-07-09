@@ -19,7 +19,7 @@ return new class extends Migration
             $table->enum('status',['sent','draft','accepted','rejected','cancelled']);
             $table->date('due_date')->nullable();
             $table->decimal('subtotal');
-            $table->string('tax');
+            $table->string('tax'); 
             $table->decimal('total');
             $table->string('discount');
             $table->string('notes')->nullable();

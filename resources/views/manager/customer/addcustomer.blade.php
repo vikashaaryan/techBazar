@@ -135,47 +135,7 @@
                         @enderror
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Address Type -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Address Type</label>
-                            <div class="relative">
-                                <select name="addressable_type"
-                                    class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition appearance-none bg-white">
-                                    <option value="customer" {{ old('addressable_type', 'customer') == 'customer' ? 'selected' : '' }}>Customer</option>
-                                    <option value="supplier" {{ old('addressable_type') == 'supplier' ? 'selected' : '' }}>Supplier</option>
-                                </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                        <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            @error('addressable_type')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        
-                        <!-- Purpose -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
-                            <div class="relative">
-                                <select name="purpose"
-                                    class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition appearance-none bg-white">
-                                    <option value="billing" {{ old('purpose', 'billing') == 'billing' ? 'selected' : '' }}>Billing</option>
-                                    <option value="shipping" {{ old('purpose') == 'shipping' ? 'selected' : '' }}>Shipping</option>
-                                </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                        <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            @error('purpose')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
+                 
                 </div>
                 
                 <!-- Location Section -->

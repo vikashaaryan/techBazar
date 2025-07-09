@@ -45,8 +45,6 @@ class CustomerController extends Controller
             // Address
 
             'address' => 'required|string|max:500',
-            'addressable_type' => 'required|in:customer,supplier',
-            'purpose' => 'required|in:billing,shipping',
             'city' => 'required|string|max:100',
             'state' => 'required|string|max:100',
             'country' => 'required|string|max:100',
@@ -55,8 +53,8 @@ class CustomerController extends Controller
 
         $address = Address::create([
             'address' => $request->address,
-            'addressable_type' => $request->addressable_type,
-            'purpose' => $request->purpose,
+            'addressable_type' => 'customer',
+            'purpose' => 'billing',
             'city' => $request->city,
             'state' => $request->state,
             'country' => $request->country,

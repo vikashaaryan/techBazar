@@ -1,9 +1,7 @@
 @extends('manager.managerlayout')
-
 @section('title')
     Staff Dashboard
 @endsection
-
 @section('content')
     <div class="p-4 space-y-6">
         <!-- Quick Actions Card -->
@@ -20,7 +18,6 @@
                 </h2>
                 <span class="text-sm text-blue-600 font-medium">Shortcuts to common tasks</span>
             </div>
-
             <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <a href="{{route('customer.create')}}" class="group relative overflow-hidden">
                     <div
@@ -35,7 +32,7 @@
                     </div>
                 </a>
 
-                <a href="#" class="group relative overflow-hidden">
+                <a href="{{ route('createQuotation') }}" class="group relative overflow-hidden">
                     <div
                         class="flex flex-col items-center p-5 rounded-xl bg-gradient-to-b from-white to-gray-50 hover:from-green-50 hover:to-green-100 transition-all border border-gray-200 hover:border-green-200 shadow-sm hover:shadow-md">
                         <div
@@ -49,8 +46,7 @@
                         <span class="text-sm font-medium text-gray-700 group-hover:text-green-600">Create Quote</span>
                     </div>
                 </a>
-
-                <a href="#" class="group relative overflow-hidden">
+                <a href="{{ route('createInvoice') }}" class="group relative overflow-hidden">
                     <div
                         class="flex flex-col items-center p-5 rounded-xl bg-gradient-to-b from-white to-gray-50 hover:from-amber-50 hover:to-amber-100 transition-all border border-gray-200 hover:border-amber-200 shadow-sm hover:shadow-md">
                         <div
@@ -65,7 +61,7 @@
                     </div>
                 </a>
 
-                <a href="#" class="group relative overflow-hidden">
+                <a href="{{route('enter.payment')}}" class="group relative overflow-hidden">
                     <div
                         class="flex flex-col items-center p-5 rounded-xl bg-gradient-to-b from-white to-gray-50 hover:from-purple-50 hover:to-purple-100 transition-all border border-gray-200 hover:border-purple-200 shadow-sm hover:shadow-md">
                         <div
