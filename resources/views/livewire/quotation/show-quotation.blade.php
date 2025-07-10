@@ -1,47 +1,51 @@
-<div class="container mx-auto px-4">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Quotations ({{ count($quotations) }})</h2>
-
-    <div class="overflow-x-auto bg-white shadow rounded-lg">
-        <table class="min-w-full table-auto border border-gray-200">
-            <thead class="bg-gray-100 text-left text-sm font-medium text-gray-700">
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+        <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">Quotations <span class="text-blue-600">({{ count($quotations) }})</span></h2>
+        <div class="flex flex-col sm:flex-row gap-2 items-center">
+            <input type="search" wire:model.live.debounce.100ms="search" placeholder="Search by number or customer..." class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
+            <a wire:navigate href="{{ route('createQuotation') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+                New Quotation
+            </a>
+        </div>
+    </div>
+    <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-blue-50">
                 <tr>
-                    <th class="px-4 py-3 border-b">ID</th>
-                    <th class="px-4 py-3 border-b">Quotation No</th>
-                    <th class="px-4 py-3 border-b">Customer</th>
-                    <th class="px-4 py-3 border-b">Status</th>
-                    <th class="px-4 py-3 border-b">Total</th>
-                    <th class="px-4 py-3 border-b">Discount</th>
-                    <th class="px-4 py-3 border-b">Tax</th>
-                    <th class="px-4 py-3 border-b text-center">Actions</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Quotation No</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Customer</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Total</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Discount</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">Tax</th>
+                    <th class="px-6 py-3 text-center text-xs font-bold text-blue-700 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
-            <tbody class="text-sm text-gray-800 divide-y divide-gray-200">
+            <tbody class="bg-white divide-y divide-gray-100 text-gray-900">
                 @forelse ($quotations as $quotation)
-                    <tr>
-                        <td class="px-4 py-2">{{ $quotation->id }}</td>
-                        <td class="px-4 py-2">{{ $quotation->quotation_no }}</td>
-                        <td class="px-4 py-2">{{ $quotation->customer->name ?? 'N/A' }}</td>
-                        <td class="px-4 py-2">
-                            <span
-                                class="px-2 py-1 rounded-full text-xs font-semibold 
-                                                                            {{ $quotation->status == 'approved' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">
+                    <tr class="hover:bg-blue-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $quotation->id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-mono text-blue-700">{{ $quotation->quotation_no }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $quotation->customer->name ?? 'N/A' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold {{ $quotation->status == 'approved' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">
                                 {{ ucfirst($quotation->status) }}
                             </span>
                         </td>
-                        <td class="px-4 py-2">₹{{ number_format($quotation->total, 2) }}</td>
-                        <td class="px-4 py-2">₹{{ number_format($quotation->total_discount, 2) }}</td>
-                        <td class="px-4 py-2">₹{{ number_format($quotation->tax, 2) }}</td>
-                        <td class="px-4 py-2 text-center space-x-2">
-                            <button type="submit" class="text-red-600 hover:underline text-sm">Delete</button>
-                            <button wire:click="viewQuotation({{ $quotation->id }})"
-                                class="text-green-500 hover:underline">View</button>
-                            <button wire:click="editQuotation({{ $quotation->id }})"
-                                class="text-blue-500 hover:underline">Edit</button>
+                        <td class="px-6 py-4 whitespace-nowrap">₹{{ number_format($quotation->total, 2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">₹{{ number_format($quotation->total_discount, 2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">₹{{ number_format($quotation->tax, 2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center space-x-2">
+                            <button type="submit" class="inline-flex items-center px-3 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100 text-xs font-semibold transition">Delete</button>
+                            <button wire:click="viewQuotation({{ $quotation->id }})" class="inline-flex items-center px-3 py-1 bg-green-50 text-green-700 rounded hover:bg-green-100 text-xs font-semibold transition">View</button>
+                            <button wire:click="editQuotation({{ $quotation->id }})" class="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-700 rounded hover:bg-blue-100 text-xs font-semibold transition">Edit</button>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="text-center text-gray-500 py-4">No quotations found.</td>
+                        <td colspan="8" class="text-center text-gray-400 py-6 text-base">No quotations found.</td>
                     </tr>
                 @endforelse
             </tbody>
