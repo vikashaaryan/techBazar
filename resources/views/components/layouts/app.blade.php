@@ -41,7 +41,7 @@
         
         <!-- Main Content -->
         <main 
-            class="flex-1 p-6 transition-all duration-300 ease-in-out"
+            class="flex-1 p-6 transition-all duration-300 ease-in-out mt-16"
             :class="sidebarOpen ? 'ml-[18%]' : 'ml-20'"
         >
             {{ $slot }}

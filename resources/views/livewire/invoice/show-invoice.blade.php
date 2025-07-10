@@ -1,4 +1,4 @@
-<div class="w-full px-4 py-6 bg-gray-50 min-h-screen">
+<div class="w-full mt-16 px-4 py-6 bg-gray-50 min-h-screen">
     <div class="max-w-7xl mx-auto">
         <!-- Header Section -->
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
@@ -14,44 +14,21 @@
                 </div>
                 <!-- Right: Action Bar with better spacing and visual hierarchy -->
                 <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                    <!-- Search Input with enhanced styling -->
+                    <!-- Search Input with Livewire binding -->
                     <div class="relative flex-grow md:w-56 lg:w-64">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd"
-                                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                    clip-rule="evenodd" />
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                             </svg>
                         </div>
-                        <input type="search" placeholder="Search invoices..."
+                        <input type="search" placeholder="Search invoices..." wire:model.live.debounce.100ms="search"
                             class="block w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-shadow duration-150">
                     </div>
 
-                    <!-- Status Filter with custom arrow -->
-                    <div class="relative w-full sm:w-44">
-                        <select
-                            class="appearance-none block w-full pl-3 pr-10 py-2 text-base border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm cursor-pointer">
-                            <option value="" selected>All Statuses</option>
-                            <option value="sent">Sent</option>
-                            <option value="draft">Draft</option>
-                            <option value="due">Due</option>
-                            <option value="read">Read</option>
-                            <option value="overdue">Overdue</option>
-                            <option value="paid">Paid</option>
-                        </select>
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path fill-rule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                    </div>
+                    <!-- Status Filter removed as requested -->
 
                     <!-- New Invoice Button with icon -->
-                    <a href="#"
+                    <a wire:navigate href="{{ route('createInvoice') }}"
                         class="flex-shrink-0 inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150">
                         <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                             fill="currentColor" aria-hidden="true">
@@ -199,6 +176,7 @@
                     @endisset
                 </tbody>
             </table>
+            {{ $invoices->links() }}
         </div>
     </div>
 </div>
