@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PaymentReceivedMail;
+use App\Notifications\PaymentReceived;
 
 class PaymentController extends Controller
 {
@@ -78,11 +79,11 @@ class PaymentController extends Controller
             ->whereNotIn('status', ['paid', 'cancelled'])
             ->get()
             ->filter(function ($invoice) {
-                $paidAmount = $invoice->payments->sum('amount');
+                $paidAmount = $invoice->payments->where('status', 'captured')->sum('amount');
                 return ($invoice->total - $paidAmount) > 0;
             })
             ->map(function ($invoice) {
-                $paidAmount = $invoice->payments->sum('amount');
+                $paidAmount = $invoice->payments->where('status', 'captured')->sum('amount');
                 return [
                     'id' => $invoice->id,
                     'invoice_number' => $invoice->invoice_no,
@@ -117,19 +118,23 @@ class PaymentController extends Controller
             'payment_date' => 'required|date',
             'amount' => 'required|numeric|min:0.01',
             'method' => 'required|in:cash,card,upi,bank,check,razorpay',
+            'transaction_reference' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
+            'customer_email' => 'nullable|email',
+            'customer_phone' => 'nullable|string'
         ]);
 
         DB::beginTransaction();
         try {
             $invoice = Invoice::with(['customer', 'payments'])->findOrFail($validated['invoice_id']);
-            $paidAmount = $invoice->payments->sum('amount');
+            $paidAmount = $invoice->payments->where('status', 'captured')->sum('amount');
             $balance = $invoice->total - $paidAmount;
 
             // Validate payment amount
             if ($validated['amount'] > $balance) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Payment amount cannot exceed the remaining balance of $' . number_format($balance, 2)
+                    'message' => 'Payment amount cannot exceed the remaining balance of ₹' . number_format($balance, 2)
                 ], 422);
             }
 
@@ -149,12 +154,14 @@ class PaymentController extends Controller
                 'payment_date' => $validated['payment_date'],
                 'amount' => $validated['amount'],
                 'method' => $validated['method'],
+                'transaction_reference' => $validated['transaction_reference'],
+                'notes' => $validated['notes'],
                 'status' => 'captured',
                 'payment_status' => $paymentStatus,
             ]);
             $payment->save();
 
-            // Update invoice
+            // Update invoice paid amount
             $newPaidAmount = $paidAmount + $validated['amount'];
             $invoice->amount_paid = $newPaidAmount;
 
@@ -167,15 +174,19 @@ class PaymentController extends Controller
 
             $invoice->save();
 
-            // Send notifications if invoice is fully paid
-       
+            // Send notification if fully paid
+            if ($fullyPaid && $validated['customer_email']) {
+                $invoice->customer->notify(new PaymentReceived($invoice, $payment));
+            }
+
             DB::commit();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Payment recorded successfully!',
                 'invoice_id' => $invoice->id,
-                'fully_paid' => $fullyPaid
+                'fully_paid' => $fullyPaid,
+                'balance' => $invoice->total - $newPaidAmount
             ]);
         } catch (\Exception $e) {
             DB::rollBack();

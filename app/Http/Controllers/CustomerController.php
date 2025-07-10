@@ -19,8 +19,6 @@ class CustomerController extends Controller
         return view('manager.customer.managecustomer', compact('customers'));
     }
 
-
-
     /**
      * Show the form for creating a new resource.
      */
@@ -37,18 +35,20 @@ class CustomerController extends Controller
         $request->validate([
             //customer
             'name' => 'required|string|max:255',
-            'contact' => 'required|string|max:20',
-            'email' => 'required|email|max:255',
+            'contact' => 'required|string|max:20|unique:customers,contact',
+            'email' => 'required|email|max:255|unique:customers,email',
             'gender' => 'required|in:male,female',
             'status' => 'required|boolean',
 
             // Address
-
             'address' => 'required|string|max:500',
             'city' => 'required|string|max:100',
             'state' => 'required|string|max:100',
             'country' => 'required|string|max:100',
             'pincode' => 'required|string|max:10',
+        ], [
+            'email.unique' => 'The email address is already in use by another customer.',
+            'contact.unique' => 'The contact number is already in use by another customer.'
         ]);
 
         $address = Address::create([
@@ -69,7 +69,8 @@ class CustomerController extends Controller
             'status' => $request->status,
             'address_id' => $address->id,
         ]);
-        ToastMagic::success('Customer Add successfully!');
+
+        ToastMagic::success('Customer added successfully!');
         return redirect()->route('customer.index');
     }
 
@@ -78,7 +79,7 @@ class CustomerController extends Controller
      */
     public function show($id)
     {
-
+        //
     }
 
     /**
@@ -97,7 +98,7 @@ class CustomerController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'contact' => 'required|string|max:20',
-            'email' => 'required|email|max:255',
+            'email' => 'required|email|max:255|unique:customers,email,' . $customer->id,
             'gender' => 'required|in:male,female,other',
             'status' => 'required|boolean',
 
@@ -106,6 +107,8 @@ class CustomerController extends Controller
             'state' => 'required|string|max:100',
             'country' => 'required|string|max:100',
             'pincode' => 'required|string|max:10',
+        ], [
+            'email.unique' => 'The email address is already in use by another customer.'
         ]);
 
         $customer->update([
@@ -118,7 +121,7 @@ class CustomerController extends Controller
 
         $addressData = [
             'address' => $request->address,
-            'purpose' => $request->purpose ?? 'billing', // optional
+            'purpose' => $request->purpose ?? 'billing',
             'city' => $request->city,
             'state' => $request->state,
             'country' => $request->country,
@@ -131,11 +134,9 @@ class CustomerController extends Controller
             $customer->address()->create($addressData);
         }
 
-        return redirect()->back();
         ToastMagic::success('Customer updated successfully!');
+        return redirect()->back();
     }
-
-
 
     /**
      * Remove the specified resource from storage.
@@ -143,11 +144,7 @@ class CustomerController extends Controller
     public function destroy(Customer $customer)
     {
         $customer->delete();
-        toastMagic::success('Customer deleted successfully!');
+        ToastMagic::success('Customer deleted successfully!');
         return redirect()->back();
     }
-
-    
-
-
 }

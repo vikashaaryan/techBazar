@@ -39,7 +39,6 @@
                         <td class="px-6 py-4 whitespace-nowrap">₹{{ number_format($quotation->tax, 2) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-center space-x-2">
                             <button type="submit" class="inline-flex items-center px-3 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100 text-xs font-semibold transition">Delete</button>
-                            <button wire:click="viewQuotation({{ $quotation->id }})" class="inline-flex items-center px-3 py-1 bg-green-50 text-green-700 rounded hover:bg-green-100 text-xs font-semibold transition">View</button>
                             <button wire:click="editQuotation({{ $quotation->id }})" class="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-700 rounded hover:bg-blue-100 text-xs font-semibold transition">Edit</button>
                         </td>
                     </tr>

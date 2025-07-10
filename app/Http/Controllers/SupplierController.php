@@ -108,6 +108,13 @@ class SupplierController extends Controller
             'state'         => 'required|string|max:100',
             'country'       => 'required|string|max:100',
             'pincode'       => 'required|string|max:10',
+        ], [
+            'email.unique' => 'The email address is already in use by another supplier.',
+            'phone.unique' => 'The phone number is already in use by another supplier.',
+            'supplier_name.required' => 'The supplier name field is required.',
+            'company.required' => 'The company name field is required.',
+            'address.required' => 'The address field is required.',
+            'pincode.required' => 'The postal code field is required.',
         ]);
 
         // Update Supplier data

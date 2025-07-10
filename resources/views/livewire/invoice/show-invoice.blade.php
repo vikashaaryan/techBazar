@@ -1,4 +1,4 @@
-<div class="w-full mt-16 px-4 py-6 bg-gray-50 min-h-screen">
+<div class="w-full  px-4 py-6 bg-gray-50 min-h-screen">
     <div class="max-w-7xl mx-auto">
         <!-- Header Section -->
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
@@ -143,7 +143,7 @@
                                                 </form>
                                             </li>
                                             <li>
-                                                <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                <a href="{{route('enter.payment')}}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                     <svg class="w-4 h-4 mr-2 text-gray-500" fill="none"
                                                         stroke="currentColor" viewBox="0 0 24 24"
                                                         xmlns="http://www.w3.org/2000/svg">
@@ -155,13 +155,7 @@
                                                     Enter Payment
                                                 </a>
                                             </li>
-                                            <li>
-                                                <a href=""
-                                                    class="flex items-center px-10 py-2 text-sm text-red-600 hover:bg-gray-100 hover:text-red-800">
-                                                   
-                                                    View Histrory
-                                                </a>
-                                            </li>
+                                            
                                         </ul>
                                     </div>
                                 </td>

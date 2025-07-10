@@ -34,4 +34,9 @@ class Product extends Model
     {
         return $this->hasMany(SalesItems::class); // or whatever relationship is appropriate
     }
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+  
 }
